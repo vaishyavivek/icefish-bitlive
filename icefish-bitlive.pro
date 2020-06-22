@@ -1,4 +1,4 @@
-QT += quick
+QT += quick multimedia multimedia-private
 
 CONFIG += c++11
 
@@ -14,7 +14,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        src/cpp/bitlivesocket.cpp \
+        src/cpp/FramedSocketWorker.cpp \
+        src/cpp/GuiInterface.cpp \
         src/cpp/main.cpp
 
 RESOURCES += qml.qrc
@@ -31,4 +32,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    src/cpp/bitlivesocket.h
+    src/cpp/CustomVideoOutput.h \
+    src/cpp/utilities/FrameToJsonRunnable.h \
+    src/cpp/utilities/JsonToFrameRunnable.h \
+    src/cpp/FramedSocketWorker.h \
+    src/cpp/GuiInterface.h

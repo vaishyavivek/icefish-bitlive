@@ -10,6 +10,12 @@
 FramedSocketWorker::FramedSocketWorker(QString ServerIp, QString PeerId, QString Password, QObject *parent)
     : CustomVideoOutput("" , parent), peerId(PeerId), password(Password), serverIp(ServerIp) {
 
+    tries = 0;
+
+    socket = new QUdpSocket();
+    socket->bind(QHostAddress("0.0.0.0"), 0, QAbstractSocket::ReuseAddressHint);
+    connect(socket, &QUdpSocket::readyRead, this, &FramedSocketWorker::ReadMessage);
+
     SendReHello();
 }
 
@@ -130,7 +136,7 @@ void FramedSocketWorker::SendPeerConnectFinish() {
                           QHostAddress(otherPeer["publicIp"].toString()),
                           otherPeer["nextPort"].toInt());
 
-    QTimer::singleShot(3000, this, &FramedSocketWorker::SendPeerConnectFinish);
+//    QTimer::singleShot(3000, this, &FramedSocketWorker::SendPeerConnectFinish);
 }
 
 
@@ -147,7 +153,12 @@ void FramedSocketWorker::ReadMessage() {
 
         auto json = ( QJsonDocument::fromJson( datastr.toUtf8() ) ).object();
 
-        if( json["type"].toString() == "PeerConnectResponse") {
+        if( json["type"].toString().compare("ReHelloAcknowledge") == 0) {
+
+            qDebug() << "Received ReHello Ack";
+        }
+
+        else if( json["type"].toString() == "PeerConnectResponse") {
 
             tries = 3;
 

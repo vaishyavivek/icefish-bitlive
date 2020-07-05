@@ -9,4 +9,16 @@ Window {
     height: 480
     title: qsTr("Hello World")
 
+
+    SwipeView {
+        id: mainSwipeView
+
+        currentIndex: 0
+//        interactive: false
+        anchors.fill: parent
+
+        HomePage { }
+
+        VideoOutputPage { }
+    }
 }

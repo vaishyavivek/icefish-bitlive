@@ -69,8 +69,10 @@ void GuiInterface::RegistrationFinished() {
         if( json["type"].toString() == "PeerRegistered") {
 
             myId = QString::number( json["peerId"].toInt());
+            emit MyIdChanged();
 
-            password = QString::number(QRandomGenerator::global()->generate(), 16);
+            password = (QString::number(QRandomGenerator::global()->generate(), 16));
+            emit PasswordChanged();
 
             qDebug() << ("Successfully Registered With Bitlive Tracker\n");
             qDebug() << ("Your Id is " + myId + " and Password is " + password + "\n");
@@ -78,7 +80,7 @@ void GuiInterface::RegistrationFinished() {
             createNewWorker();
 
             socket->close();
-            socket->deleteLater();
+//            socket->deleteLater();
         }
     }
 }
@@ -90,9 +92,10 @@ void GuiInterface::createNewWorker() {
 
     connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame);
     connect(this, &GuiInterface::sendTextToWorker, fsw, &FramedSocketWorker::sendText);
-    connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::createNewWorker);
+//    connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::createNewWorker);
 
     peerFeedList.append(fsw);
+    emit PeerFeedListChanged();
 }
 
 

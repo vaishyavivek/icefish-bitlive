@@ -2,7 +2,6 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-//#include "bitlivesocket.h"
 #include "GuiInterface.h"
 
 int main(int argc, char *argv[])
@@ -19,13 +18,10 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-//    auto socket = new BitliveSocket();
-    auto gui = new GuiInterface("");
+    auto gui = new GuiInterface("13.234.174.90");
 
     auto ctxt = engine.rootContext();
     ctxt->setContextProperty("backend", gui);
-
-//    socket->SendHello();
 
     engine.load(url);
 

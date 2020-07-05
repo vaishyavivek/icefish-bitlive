@@ -5,6 +5,7 @@
 #include <QRunnable>
 #include <QVideoFrame>
 #include <QJsonValue>
+#include <QDebug>
 
 class JsonToFrameRunnable: public QObject, public QRunnable {
     Q_OBJECT
@@ -16,6 +17,8 @@ class JsonToFrameRunnable: public QObject, public QRunnable {
         img.loadFromData(QByteArray::fromBase64(encoded), "PNG");
 
         QVideoFrame frame(img);
+//        qDebug() << frame.isValid();
+
         emit setFrame(frame);
     }
 

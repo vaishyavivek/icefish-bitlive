@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>src/qml/main.qml</file>
+        <file>src/qml/HomePage.qml</file>
+        <file>src/qml/custom/ZButton.qml</file>
+        <file>src/qml/custom/ZTextField.qml</file>
+        <file>src/qml/VideoOutputPage.qml</file>
     </qresource>
 </RCC>

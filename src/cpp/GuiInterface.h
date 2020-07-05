@@ -14,12 +14,20 @@ class GuiInterface : public QObject
 
     Q_PROPERTY(QList<QObject*> PeerFeedList READ PeerFeedList NOTIFY PeerFeedListChanged)
 
+    Q_PROPERTY(QString MyId READ MyId NOTIFY MyIdChanged)
+
+    Q_PROPERTY(QString Password READ Password NOTIFY PasswordChanged)
+
 public:
     explicit GuiInterface(QString ServerIp, QObject *parent = nullptr);
 
     CustomVideoOutput *MyFeed() const { return myFeed; }
 
     QList<QObject*> PeerFeedList() { return peerFeedList; }
+
+    QString MyId() const { return myId;}
+
+    QString Password() const { return password;}
 
 
 public slots:
@@ -29,10 +37,15 @@ public slots:
     void sendText(QString text);
 
 signals:
+
     void MyFeedChanged();
     void PeerFeedListChanged();
 
     void sendTextToWorker(QString text);
+
+    void MyIdChanged();
+    void PasswordChanged();
+
 
 private slots:
 

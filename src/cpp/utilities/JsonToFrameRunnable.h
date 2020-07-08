@@ -14,7 +14,7 @@ class JsonToFrameRunnable: public QObject, public QRunnable {
 
         auto const encoded = json.toString().toLatin1();
         QImage img;
-        img.loadFromData(QByteArray::fromBase64(encoded), "PNG");
+        img.loadFromData(QByteArray::fromBase64(encoded), "JPG");
 
         QVideoFrame frame(img);
 //        qDebug() << frame.isValid();

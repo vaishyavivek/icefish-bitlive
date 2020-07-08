@@ -1,4 +1,4 @@
-QT += quick multimedia multimedia-private
+QT += quick multimedia
 
 CONFIG += c++11
 

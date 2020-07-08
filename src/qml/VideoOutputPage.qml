@@ -17,6 +17,11 @@ Rectangle {
             width: parent.width
             height: parent.height*0.35
         }
+        TextInput{
+            width: parent.width
+            height: 50
+            onTextChanged: backend.sendText(text)
+        }
 
         ListView {
             id: peerOutputList
@@ -34,6 +39,10 @@ Rectangle {
                     source: model.modelData
                     width: parent.width
                     height: parent.height
+                }
+
+                Text {
+                    text: model.modelData.TextReceived
                 }
             }
 

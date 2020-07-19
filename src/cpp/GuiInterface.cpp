@@ -2,19 +2,21 @@
 
 #include <QDebug>
 #include <QCamera>
-#include <QThread>
 #include <QVideoProbe>
-#include <QJsonObject>
 #include <QJsonDocument>
 #include <QUdpSocket>
+#include <QThreadPool>
 #include <QRandomGenerator>
 
 #include "FramedSocketWorker.h"
+#include "utilities/audioinputgenerator.h"
 
 GuiInterface::GuiInterface(QString ServerIp, QObject *parent)
     : QObject(parent), serverIp(ServerIp) {
 
     PrepareMyFeed();
+
+    PrepareMyVoice();
 
     SendHello();
 }
@@ -34,6 +36,20 @@ void GuiInterface::PrepareMyFeed() {
     }
 
     camera->start();
+}
+
+void GuiInterface::PrepareMyVoice() {
+
+
+    AudioInputGenerator *aig = new AudioInputGenerator();
+    aig->moveToThread(&voiceGenerator);
+    connect(&voiceGenerator, &QThread::finished, aig, &QObject::deleteLater);
+    connect(aig, &AudioInputGenerator::setAudioBuffer, this, &GuiInterface::sendJsonedAudioToWorker);
+    connect(this, &GuiInterface::startVoiceRecorder, aig, &AudioInputGenerator::start);
+
+    voiceGenerator.start();
+    emit startVoiceRecorder();
+
 }
 
 
@@ -91,6 +107,7 @@ void GuiInterface::createNewWorker() {
     FramedSocketWorker *fsw = new FramedSocketWorker(serverIp, myId, password);
 
     connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame);
+    connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio);
     connect(this, &GuiInterface::sendTextToWorker, fsw, &FramedSocketWorker::sendText);
 //    connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::createNewWorker);
 

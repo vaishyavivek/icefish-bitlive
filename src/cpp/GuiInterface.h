@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QUdpSocket>
+//#include <QAudioInput>
+#include <QThread>
 #include "CustomVideoOutput.h"
 
 
@@ -36,12 +38,17 @@ public slots:
 
     void sendText(QString text);
 
+//    void readJsonAudio(QJsonValue value, int size);
+
 signals:
 
     void MyFeedChanged();
     void PeerFeedListChanged();
 
     void sendTextToWorker(QString text);
+
+    void startVoiceRecorder();
+    void sendJsonedAudioToWorker(QJsonValue value, size_t size);
 
     void MyIdChanged();
     void PasswordChanged();
@@ -53,8 +60,11 @@ private slots:
 
     void createNewWorker();
 
+
 private:
     void PrepareMyFeed();
+
+    void PrepareMyVoice();
 
     void SendHello();
 
@@ -62,6 +72,10 @@ private:
     QString password;
     QString username;
     QUdpSocket *socket;
+
+//    QIODevice *audioBuffer;
+//    QAudioInput *audioIn;
+    QThread voiceGenerator;
 
     QString serverIp;
     CustomVideoOutput *myFeed;

@@ -16,7 +16,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         src/cpp/FramedSocketWorker.cpp \
         src/cpp/GuiInterface.cpp \
-        src/cpp/main.cpp
+        src/cpp/main.cpp \
+        src/cpp/utilities/AudioInputGenerator.cpp \
+        src/cpp/utilities/AudioOutputGenerator.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,9 +33,34 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+#LIBS += -lopus
+#INCLUDEPATH += src/opus/include \
+#        src/opus/src
+#LIBS += -llibopus
+
 HEADERS += \
     src/cpp/CustomVideoOutput.h \
+    src/cpp/utilities/AudioInputGenerator.h \
+    src/cpp/utilities/AudioOutputGenerator.h \
     src/cpp/utilities/FrameToJsonRunnable.h \
     src/cpp/utilities/JsonToFrameRunnable.h \
     src/cpp/FramedSocketWorker.h \
     src/cpp/GuiInterface.h
+
+
+unix:!android {
+    LIBS += -L$$PWD/src/opus-dev-lib/lib/unix/x86_64/ -lopus
+}
+android {
+    LIBS += -L$$PWD/src/opus-dev-lib/lib/armeabi-v7a/ -lopus
+}
+
+INCLUDEPATH += $$PWD/src/opus-dev-lib/include
+DEPENDPATH += $$PWD/src/opus-dev-lib/include
+
+unix:!android {
+    PRE_TARGETDEPS += $$PWD/src/opus-dev-lib/lib/unix/x86_64/libopus.a
+}
+android {
+    PRE_TARGETDEPS += $$PWD/src/opus-dev-lib/lib/armeabi-v7a/libopus.a
+}

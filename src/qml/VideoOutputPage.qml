@@ -46,7 +46,6 @@ Rectangle {
                 }
             }
 
-            onCountChanged: console.log(count)
         }
     }
 

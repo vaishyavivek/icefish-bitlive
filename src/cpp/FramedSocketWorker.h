@@ -5,6 +5,7 @@
 #include <QVideoFrame>
 #include <QUdpSocket>
 #include <QJsonObject>
+#include <QThread>
 
 #include "CustomVideoOutput.h"
 
@@ -29,6 +30,8 @@ public slots:
 
     void sendJsonedFrame(QJsonValue frame);
 
+    void sendJsonedAudio(QJsonValue buffer, int size);
+
 
 private slots:
     void ReadMessage();
@@ -39,6 +42,9 @@ signals:
 
     void connectionFinished();
 
+    void startAudioOutput();
+
+    void setJsonedAudio(QJsonValue, int);
 
 private: //members
     QString peerId;
@@ -51,6 +57,10 @@ private: //members
     QJsonObject otherPeer;
 
     QString textReceived;
+
+//    QAudioOutput *audioOutput;
+//    QIODevice *audioDevice;
+    QThread voiceReceiver;
 
     //methods
 

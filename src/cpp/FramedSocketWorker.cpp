@@ -5,7 +5,10 @@
 #include <QTimer>
 #include <QThreadPool>
 
+#include "utilities/audiooutputgenerator.h"
+
 #include "utilities/JsonToFrameRunnable.h"
+//#include "utilities/JsonToAudioBufferRunnable.h"
 
 FramedSocketWorker::FramedSocketWorker(QString ServerIp, QString PeerId, QString Password, QObject *parent)
     : CustomVideoOutput("" , parent), peerId(PeerId), password(Password), serverIp(ServerIp) {
@@ -17,6 +20,15 @@ FramedSocketWorker::FramedSocketWorker(QString ServerIp, QString PeerId, QString
     connect(socket, &QUdpSocket::readyRead, this, &FramedSocketWorker::ReadMessage);
 
     SendReHello();
+
+
+    AudioOutputGenerator *aog = new AudioOutputGenerator();
+    aog->moveToThread(&voiceReceiver);
+    connect(&voiceReceiver, &QThread::finished, aog, &QObject::deleteLater);
+    connect(this, &FramedSocketWorker::startAudioOutput, aog, &AudioOutputGenerator::start);
+    connect(this, &FramedSocketWorker::setJsonedAudio, aog, &AudioOutputGenerator::setAudioBuffer);
+
+    voiceReceiver.start();
 }
 
 
@@ -182,6 +194,7 @@ void FramedSocketWorker::ReadMessage() {
         else if( json["type"].toString() == "PeerConnectAcknowledge") {
 
             tries = 9;
+            emit startAudioOutput();
 
             SendPeerConnectFinish();
 
@@ -192,6 +205,7 @@ void FramedSocketWorker::ReadMessage() {
         else if( json["type"].toString() == "PeerConnectFinish") {
 
             tries = 12;
+            emit startAudioOutput();
 
             qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
             emit connectionFinished();
@@ -206,6 +220,10 @@ void FramedSocketWorker::ReadMessage() {
                 connect(ftjr, &JsonToFrameRunnable::setFrame, this, &FramedSocketWorker::setNetworkFrame);
 
                 QThreadPool::globalInstance()->start(ftjr);
+            }
+            else if(json["dataType"].toString() == "Audio") {
+
+                emit setJsonedAudio(json["payload"], json["size"].toInt());
             }
             else {
 
@@ -242,6 +260,24 @@ void FramedSocketWorker::sendJsonedFrame(QJsonValue frame) {
         obj["type"] = "Data";
         obj["dataType"] = "Video";
         obj["payload"] = frame;
+
+        QJsonDocument doc(obj);
+        socket->writeDatagram(doc.toJson(QJsonDocument::Compact),
+                            QHostAddress(otherPeer["publicIp"].toString()),
+                            otherPeer["nextPort"].toInt());
+    }
+}
+
+
+void FramedSocketWorker::sendJsonedAudio(QJsonValue buffer, int size) {
+
+    if(!otherPeer.isEmpty() && !buffer.isNull()) {
+
+        QJsonObject obj;
+        obj["type"] = "Data";
+        obj["dataType"] = "Audio";
+        obj["payload"] = buffer;
+        obj["size"] = QString::number(size);
 
         QJsonDocument doc(obj);
         socket->writeDatagram(doc.toJson(QJsonDocument::Compact),

@@ -1,5 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 TextField {
     id: control
@@ -9,6 +9,7 @@ TextField {
         implicitWidth: 200
         implicitHeight: 40
         color: control.enabled ? "transparent" : "#353637"
-        border.color: control.enabled ? "#21be2b" : "transparent"
+        border.color: control.enabled ? "green" : "transparent"
+        radius: height*0.25
     }
 }

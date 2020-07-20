@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QCamera>
+#include <QCameraInfo>
 #include <QVideoProbe>
 #include <QJsonDocument>
 #include <QUdpSocket>
@@ -9,7 +10,7 @@
 #include <QRandomGenerator>
 
 #include "FramedSocketWorker.h"
-#include "utilities/audioinputgenerator.h"
+#include "utilities/AudioInputGenerator.h"
 
 GuiInterface::GuiInterface(QString ServerIp, QObject *parent)
     : QObject(parent), serverIp(ServerIp) {
@@ -28,6 +29,16 @@ void GuiInterface::PrepareMyFeed() {
     emit MyFeedChanged();
 
     auto camera = new QCamera();
+    const QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+    for (const QCameraInfo &cameraInfo : cameras) {
+        if (cameraInfo.position() == QCamera::FrontFace) {
+            camera = new QCamera(cameraInfo);
+            cameraRotation = cameraInfo.orientation();
+            emit CameraRotationChanged();
+        }
+    }
+
+
     camera->setCaptureMode(QCamera::CaptureVideo);
 
     auto probe = new QVideoProbe();
@@ -44,7 +55,7 @@ void GuiInterface::PrepareMyVoice() {
     AudioInputGenerator *aig = new AudioInputGenerator();
     aig->moveToThread(&voiceGenerator);
     connect(&voiceGenerator, &QThread::finished, aig, &QObject::deleteLater);
-    connect(aig, &AudioInputGenerator::setAudioBuffer, this, &GuiInterface::sendJsonedAudioToWorker);
+    connect(aig, &AudioInputGenerator::setAudioBuffer, this, &GuiInterface::sendJsonedAudioToWorker, Qt::QueuedConnection);
     connect(this, &GuiInterface::startVoiceRecorder, aig, &AudioInputGenerator::start);
 
     voiceGenerator.start();
@@ -65,7 +76,7 @@ void GuiInterface::SendHello() {
 
     socket->bind(QHostAddress("0.0.0.0"), 0, QAbstractSocket::ReuseAddressHint);
 
-    connect(socket, &QUdpSocket::readyRead, this, &GuiInterface::RegistrationFinished);
+    connect(socket, &QUdpSocket::readyRead, this, &GuiInterface::RegistrationFinished, Qt::QueuedConnection);
     socket->writeDatagram(doc.toJson(QJsonDocument::Compact), QHostAddress(serverIp), 4855);
 }
 
@@ -109,7 +120,7 @@ void GuiInterface::createNewWorker() {
     connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame);
     connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio);
     connect(this, &GuiInterface::sendTextToWorker, fsw, &FramedSocketWorker::sendText);
-//    connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::createNewWorker);
+    connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::finishConnection);
 
     peerFeedList.append(fsw);
     emit PeerFeedListChanged();
@@ -118,8 +129,24 @@ void GuiInterface::createNewWorker() {
 
 void GuiInterface::initiateConnection(QString peerId, QString password) {
 
-    auto last_fsw = qobject_cast<FramedSocketWorker*>(peerFeedList.last());
-    last_fsw->initiateConnection(peerId, password);
+    if (peerFeedList.length() > 0) {
+        auto last_fsw = qobject_cast<FramedSocketWorker*>(peerFeedList.last());
+        if (!last_fsw->isConnectedToPeer())
+            last_fsw->initiateConnection(peerId, password);
+        else {
+            qDebug() << "No connection available";
+        }
+    }
+
+}
+
+
+void GuiInterface::finishConnection() {
+
+    if (peerFeedList.length() == 1) {
+        emit switchToMainRoomView();
+    }
+    createNewWorker();
 }
 
 

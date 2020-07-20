@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QThreadPool>
 
-#include "utilities/audiooutputgenerator.h"
+#include "utilities/AudioOutputGenerator.h"
 
 #include "utilities/JsonToFrameRunnable.h"
 //#include "utilities/JsonToAudioBufferRunnable.h"
@@ -42,6 +42,12 @@ void FramedSocketWorker::SendReHello() {
 
     QJsonDocument doc(obj);
     socket->writeDatagram(doc.toJson(QJsonDocument::Compact), QHostAddress(serverIp), 4855);
+}
+
+
+bool FramedSocketWorker::isConnectedToPeer() {
+
+    return isConnected;
 }
 
 
@@ -199,6 +205,7 @@ void FramedSocketWorker::ReadMessage() {
             SendPeerConnectFinish();
 
             qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
+            isConnected = true;
             emit connectionFinished();
         }
 
@@ -208,6 +215,7 @@ void FramedSocketWorker::ReadMessage() {
             emit startAudioOutput();
 
             qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
+            isConnected = true;
             emit connectionFinished();
         }
 

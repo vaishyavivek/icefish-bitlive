@@ -16,10 +16,14 @@ class JsonToFrameRunnable: public QObject, public QRunnable {
         QImage img;
         img.loadFromData(QByteArray::fromBase64(encoded), "JPG");
 
-        QVideoFrame frame(img);
-//        qDebug() << frame.isValid();
+        if (!img.isNull()) {
 
-        emit setFrame(frame);
+            QVideoFrame frame(img);
+            if (frame.isValid()) {
+
+                emit setFrame(frame);
+            }
+        }
     }
 
 signals:

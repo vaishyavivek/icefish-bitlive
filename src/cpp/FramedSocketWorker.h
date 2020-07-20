@@ -24,6 +24,8 @@ public:
 
 public slots:
 
+    bool isConnectedToPeer();
+
     void initiateConnection(QString destinationPeerId, QString password);
 
     void sendText(QString data);
@@ -55,6 +57,7 @@ private: //members
     int tries;
 
     QJsonObject otherPeer;
+    bool isConnected = false;
 
     QString textReceived;
 

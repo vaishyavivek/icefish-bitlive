@@ -16,21 +16,29 @@ class FrameToJsonRunnable: public QObject, public QRunnable {
 
     void run() override {
 
-        QByteArray barray;
-        QBuffer qbuffer(&barray);
-        qbuffer.open(QIODevice::WriteOnly);
+        if (frame.isValid()) {
 
-        QImageWriter writer(&qbuffer, "JPG");
-        writer.setQuality(10);
+            QByteArray barray;
+            QBuffer qbuffer(&barray);
+            qbuffer.open(QIODevice::WriteOnly);
 
-        QImage img = frame.image();
-        img.scaled(240, 360);
+            QImageWriter writer(&qbuffer, "JPG");
+            writer.setQuality(10);
 
-        writer.write(img);
+            QImage img = frame.image();
+            if (!img.isNull()) {
 
-        QString str = QString::fromLatin1(barray.toBase64().data());
-        emit setJsonValue(str);
-        return;
+                img.scaled(240, 360);
+
+                writer.write(img);
+
+                QString str = QString::fromLatin1(barray.toBase64().data());
+                emit setJsonValue(str);
+
+            }
+
+        }
+
     }
 
 

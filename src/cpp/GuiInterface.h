@@ -14,6 +14,8 @@ class GuiInterface : public QObject
 
     Q_PROPERTY(CustomVideoOutput* MyFeed READ MyFeed NOTIFY MyFeedChanged)
 
+    Q_PROPERTY(int CameraRotation READ CameraRotation NOTIFY CameraRotationChanged)
+
     Q_PROPERTY(QList<QObject*> PeerFeedList READ PeerFeedList NOTIFY PeerFeedListChanged)
 
     Q_PROPERTY(QString MyId READ MyId NOTIFY MyIdChanged)
@@ -24,6 +26,8 @@ public:
     explicit GuiInterface(QString ServerIp, QObject *parent = nullptr);
 
     CustomVideoOutput *MyFeed() const { return myFeed; }
+
+    int CameraRotation() const { return cameraRotation;}
 
     QList<QObject*> PeerFeedList() { return peerFeedList; }
 
@@ -36,6 +40,8 @@ public slots:
 
     void initiateConnection(QString peerId, QString password);
 
+    void finishConnection();
+
     void sendText(QString text);
 
 //    void readJsonAudio(QJsonValue value, int size);
@@ -43,7 +49,9 @@ public slots:
 signals:
 
     void MyFeedChanged();
+    void CameraRotationChanged();
     void PeerFeedListChanged();
+    void switchToMainRoomView();
 
     void sendTextToWorker(QString text);
 
@@ -79,6 +87,7 @@ private:
 
     QString serverIp;
     CustomVideoOutput *myFeed;
+    int cameraRotation = 0;
     QList<QObject*> peerFeedList;
 };
 

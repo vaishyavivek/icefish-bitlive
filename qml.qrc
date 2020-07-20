@@ -1,9 +1,16 @@
 <RCC>
     <qresource prefix="/">
-        <file>src/qml/main.qml</file>
-        <file>src/qml/HomePage.qml</file>
+        <file>src/qml/desktop/main.qml</file>
+        <file>src/qml/desktop/HomePage.qml</file>
         <file>src/qml/custom/ZButton.qml</file>
         <file>src/qml/custom/ZTextField.qml</file>
-        <file>src/qml/VideoOutputPage.qml</file>
+        <file>src/qml/desktop/VideoOutputPage.qml</file>
+        <file>src/qml/mobile/main.qml</file>
+        <file>src/qml/mobile/BottomDrawer.qml</file>
+        <file>src/qml/mobile/VideoPopup.qml</file>
+        <file>src/qml/mobile/MainRoom.qml</file>
+        <file>src/qml/mobile/ChatBoxDrawer.qml</file>
+        <file>src/qml/mobile/VideoControlDrawer.qml</file>
+        <file>src/qml/mobile/ShareDialogBox.qml</file>
     </qresource>
 </RCC>

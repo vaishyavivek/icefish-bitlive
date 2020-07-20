@@ -10,8 +10,22 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
+    QCoreApplication::setApplicationName("IceFish Bitlive");
+    QCoreApplication::setOrganizationDomain("icefish.host");
+    QCoreApplication::setOrganizationName("IceFish Developers");
+
+    QString mainQmlFile;
+
+
+//#ifdef Q_OS_ANDROID
+#define MAINFILE "qrc:/src/qml/mobile/main.qml"
+//#else
+//#define MAINFILE "qrc:/src/qml/desktop/main.qml"
+//#endif
+
+
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/src/qml/main.qml"));
+    const QUrl url(QStringLiteral(MAINFILE));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

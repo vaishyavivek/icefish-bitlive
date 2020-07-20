@@ -1,4 +1,4 @@
-#include "audioinputgenerator.h"
+#include "AudioInputGenerator.h"
 
 //#include <QtEndian>
 
@@ -31,7 +31,7 @@ void AudioInputGenerator::start() {
     if (!info.isFormatSupported(format))
         format = info.nearestFormat(format);
 
-    qDebug() << format;
+//    qDebug() << format;
 
     audioIn = new QAudioInput(info, format);
 //    audioIn->setBufferSize(50);

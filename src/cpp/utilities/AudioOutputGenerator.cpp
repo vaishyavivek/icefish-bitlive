@@ -1,4 +1,4 @@
-#include "audiooutputgenerator.h"
+#include "AudioOutputGenerator.h"
 //#include <cstring>
 //#include <QtEndian>
 

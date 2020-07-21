@@ -6,14 +6,14 @@ import "../custom"
 Drawer {
     id: bottomDrawer
     width: parent.width
-    height: parent.height*0.4
+    height: parent.height*0.5
     edge: Qt.BottomEdge
     interactive: false
 
     background: Rectangle {
 
         color: "palegreen"
-        opacity: 0.5
+        opacity: 0.8
         width: parent.width*0.9
         height: parent.height*0.9
         anchors.centerIn: parent
@@ -36,21 +36,29 @@ Drawer {
 
             ZButton {
                 id: muteMyBtn
+                property bool active: true
                 width: height
                 height: parent.height
                 icon.width: width
                 icon.height: height
-                icon.source: "/main/src/icons/mic.png"
-                iconColor: "red"
+                mainIcon: "/main/src/assets/mic_Off.png"
+                pressedIcon: "/main/src/assets/mic_Pressed.png"
+                alterIcon: "/main/src/assets/mic_On.png"
+                onClicked: backend.changeVocalSettings()
+
             }
 
             ZButton {
                 id: hideMyVideoBtn
+                property bool active: true
                 width: height
                 height: parent.height
                 icon.width: width
                 icon.height: height
-                icon.source: "/main/src/icons/video.png"
+                mainIcon: "/main/src/assets/camera_Off.png"
+                pressedIcon: "/main/src/assets/camera_Pressed.png"
+                alterIcon: "/main/src/assets/camera_On.png"
+                onClicked: backend.changeFeedSettings()
 
             }
 
@@ -65,7 +73,7 @@ Drawer {
 
             Row {
                 width: parent.width
-                height: parent.height*0.4
+                height: parent.height*0.5
                 spacing: 15
 
                 Column {
@@ -74,9 +82,17 @@ Drawer {
                     spacing: 15
 
                     ZTextField {
+                        id: peerName
+                        width: parent.width
+                        height: parent.height*0.3
+                        placeholderText: "Your Name (optional)"
+                        onAccepted: peerId.focus
+                    }
+
+                    ZTextField {
                         id: peerId
                         width: parent.width
-                        height: parent.height*0.45
+                        height: parent.height*0.3
                         placeholderText: "Peer ID"
                         onAccepted: peerPassword.focus
                     }
@@ -84,7 +100,7 @@ Drawer {
                     ZTextField {
                         id: peerPassword
                         width: parent.width
-                        height: parent.height*0.45
+                        height: parent.height*0.3
                         placeholderText: "Peer Password"
                         onAccepted: backend.initiateConnection(peerId.text, text)
                     }
@@ -94,10 +110,9 @@ Drawer {
                     id: initiateConnectionBtn
                     width: parent.width*0.2 - 15
                     height: width
-                    icon.width: width*0.4
-                    icon.height: height*0.4
-                    icon.source: "/main/src/icons/select.png"
-                    iconColor: "green"
+                    icon.width: width
+                    icon.height: height
+                    mainIcon: "/main/src/assets/join_Meeting.png"
 
                     anchors.verticalCenter: parent.verticalCenter
                     onClicked: {
@@ -109,13 +124,12 @@ Drawer {
 
             ZButton {
                 id: createMeetingPageSwipeBtn
-                height: parent.height*0.5
+                height: parent.height*0.4
                 width: height
                 anchors.horizontalCenter: parent.horizontalCenter
-                icon.width: width*0.5
-                icon.height: height*0.5
-                icon.source: "/main/src/icons/add.png"
-                iconColor: "green"
+                icon.width: width
+                icon.height: height
+                mainIcon: "/main/src/assets/new_Meeting.png"
                 font.pointSize: 30
                 font.bold: true
                 onClicked: {

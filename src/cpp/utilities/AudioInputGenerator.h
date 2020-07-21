@@ -21,6 +21,8 @@ public slots:
 
     void start();
 
+    void pause();
+
 private slots:
 
     void processAudioBuffer();

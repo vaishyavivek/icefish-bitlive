@@ -11,7 +11,7 @@
 //#include "utilities/JsonToAudioBufferRunnable.h"
 
 FramedSocketWorker::FramedSocketWorker(QString ServerIp, QString PeerId, QString Password, QObject *parent)
-    : CustomVideoOutput("" , parent), peerId(PeerId), password(Password), serverIp(ServerIp) {
+    : CustomVideoOutput("User" , parent), peerId(PeerId), password(Password), serverIp(ServerIp) {
 
     tries = 0;
 

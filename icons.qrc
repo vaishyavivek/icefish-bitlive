@@ -1,10 +1,37 @@
 <RCC>
     <qresource prefix="/main">
-        <file>src/icons/add.png</file>
-        <file>src/icons/mic.png</file>
-        <file>src/icons/select.png</file>
-        <file>src/icons/video.png</file>
-        <file>src/icons/end.png</file>
-        <file>src/icons/share.png</file>
+        <file>src/assets/add_New_Member_To_Meeting.png</file>
+        <file>src/assets/camera_Off_Indicator.png</file>
+        <file>src/assets/camera_Off.png</file>
+        <file>src/assets/camera_On_Indicator.png</file>
+        <file>src/assets/camera_On.png</file>
+        <file>src/assets/camera_Pressed.png</file>
+        <file>src/assets/chat.png</file>
+        <file>src/assets/close_Meeting_Pressed.png</file>
+        <file>src/assets/close_Meeting.png</file>
+        <file>src/assets/default_User_Avatar_1.png</file>
+        <file>src/assets/default_User_Avatar_2.png</file>
+        <file>src/assets/default_User_Avatar_3.png</file>
+        <file>src/assets/default_User_Avatar_4.png</file>
+        <file>src/assets/default_User_Avatar_5.png</file>
+        <file>src/assets/default_User_Avatar_6.png</file>
+        <file>src/assets/default_User_Avatar_7.png</file>
+        <file>src/assets/default_User_Avatar_8.png</file>
+        <file>src/assets/ear_Phone_On.png</file>
+        <file>src/assets/info.png</file>
+        <file>src/assets/join_Meeting.png</file>
+        <file>src/assets/menu.png</file>
+        <file>src/assets/mic_Off_Indicator.png</file>
+        <file>src/assets/mic_Off.png</file>
+        <file>src/assets/mic_On_Indicator.png</file>
+        <file>src/assets/mic_On.png</file>
+        <file>src/assets/mic_Pressed.png</file>
+        <file>src/assets/mute.png</file>
+        <file>src/assets/new_Meeting.png</file>
+        <file>src/assets/present_Screen.png</file>
+        <file>src/assets/report_Problem.png</file>
+        <file>src/assets/share.png</file>
+        <file>src/assets/speaker_On_Potrait.png</file>
+        <file>src/assets/switch_Camera.png</file>
     </qresource>
 </RCC>

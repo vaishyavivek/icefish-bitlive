@@ -36,6 +36,10 @@ public:
         }
     }
 
+    void clearFrame() {
+        mySurface->stop();
+
+    }
 
     int CameraRotation() const { return cameraRotation;}
 

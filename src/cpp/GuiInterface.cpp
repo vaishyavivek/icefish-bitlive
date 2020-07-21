@@ -1,7 +1,6 @@
 #include "GuiInterface.h"
 
 #include <QDebug>
-#include <QCamera>
 #include <QCameraInfo>
 #include <QVideoProbe>
 #include <QJsonDocument>
@@ -28,7 +27,7 @@ void GuiInterface::PrepareMyFeed() {
     myFeed = new CustomVideoOutput("You");
     emit MyFeedChanged();
 
-    auto camera = new QCamera();
+    camera = new QCamera();
     const QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
     for (const QCameraInfo &cameraInfo : cameras) {
         if (cameraInfo.position() == QCamera::FrontFace) {
@@ -48,6 +47,20 @@ void GuiInterface::PrepareMyFeed() {
     camera->start();
 }
 
+
+void GuiInterface::changeFeedSettings() {
+
+    if (camera->status() == QCamera::ActiveStatus) {
+        camera->stop();
+        myFeed->clearFrame();
+    }
+    else {
+        camera->start();
+    }
+}
+
+
+
 void GuiInterface::PrepareMyVoice() {
 
 
@@ -56,10 +69,17 @@ void GuiInterface::PrepareMyVoice() {
     connect(&voiceGenerator, &QThread::finished, aig, &QObject::deleteLater);
     connect(aig, &AudioInputGenerator::setAudioBuffer, this, &GuiInterface::sendJsonedAudioToWorker, Qt::QueuedConnection);
     connect(this, &GuiInterface::startVoiceRecorder, aig, &AudioInputGenerator::start);
+    connect(this, &GuiInterface::pauseVoiceRecorder, aig, &AudioInputGenerator::pause);
 
     voiceGenerator.start();
     emit startVoiceRecorder();
 
+}
+
+
+void GuiInterface::changeVocalSettings() {
+
+    emit pauseVoiceRecorder();
 }
 
 
@@ -116,8 +136,8 @@ void GuiInterface::createNewWorker() {
 
     FramedSocketWorker *fsw = new FramedSocketWorker(serverIp, myId, password);
 
-    connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame);
-    connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio);
+    connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame, Qt::QueuedConnection);
+    connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio, Qt::QueuedConnection);
     connect(this, &GuiInterface::sendTextToWorker, fsw, &FramedSocketWorker::sendText);
     connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::finishConnection);
 

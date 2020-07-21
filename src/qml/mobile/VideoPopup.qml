@@ -9,14 +9,13 @@ Popup {
 
     background: Rectangle {
 
-        color: "palegreen"
-        opacity: 0.5
+        color: "grey"
         width: parent.width
         height: parent.height
         anchors.centerIn: parent
         radius: 5
         border.width: 1
-        border.color: "green"
+        border.color: "black"
     }
 
 

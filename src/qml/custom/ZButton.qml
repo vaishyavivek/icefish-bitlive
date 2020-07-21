@@ -4,27 +4,26 @@ import QtGraphicalEffects 1.0
 
 Button {
     id: control
+    property string mainIcon: ""
+    property string pressedIcon: mainIcon
+    property string alterIcon: mainIcon
+
     text: qsTr("Button")
-    property string iconColor: "grey"
+    display: AbstractButton.IconOnly
+    checked: checkable
 
     contentItem: Rectangle{
         width: control.width
         height: control.height
         color: "transparent"
+
         Image{
             id: image
-            visible: false
-            source: icon.source
+            source: (control.pressed ? pressedIcon : (control.checked ? alterIcon : mainIcon))
             sourceSize.width: icon.width
             sourceSize.height: icon.height
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
-        }
-
-        ColorOverlay{
-            anchors.fill: image
-            source: image
-            color: iconColor
         }
     }
 
@@ -32,8 +31,11 @@ Button {
         implicitWidth: control.width
         implicitHeight: control.height
         opacity: enabled ? 1 : 0.3
-//        border.color: control.down ? "#17a81a" : "#21be2b"
-//        border.width: 1
+        color: "transparent"
         radius: height*0.5
+    }
+
+    onClicked: {
+        checkable = !checkable
     }
 }

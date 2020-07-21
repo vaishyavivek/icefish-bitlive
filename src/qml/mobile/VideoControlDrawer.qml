@@ -40,12 +40,13 @@ Drawer {
                     width: parent.width - height - 10
                     height: parent.height
                     orientation: ListView.Horizontal
-//                    model:
+                    model: backend.PeerFeedList
 
                     delegate: Rectangle {
 
                         height: parent.height
                         width: height
+                        color: "transparent"
 
                         Column {
                             anchors.fill: parent
@@ -55,12 +56,13 @@ Drawer {
                                 id: photoOfParticipant
                                 width: parent.width*0.8
                                 height: width
-    //                            source: "file"
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                source: "/main/src/assets/default_User_Avatar_" + Math.floor((Math.random() * 5) + 1) + ".png"
                             }
 
                             Text {
                                 id: nameOfParticipant
-                                text: model.modelData.PeerName
+                                text: model.modelData.UserName
                             }
                         }
                         MouseArea {
@@ -77,8 +79,7 @@ Drawer {
                     anchors.verticalCenter: parent.verticalCenter
                     icon.width: width
                     icon.height: height
-                    icon.source: "/main/src/icons/share.png"
-                    iconColor: "transparent"
+                    mainIcon: "/main/src/assets/add_New_Member_To_Meeting.png"
                     onClicked: shareDialogBox.open()
                 }
             }
@@ -96,8 +97,10 @@ Drawer {
                     height: parent.height*0.9
                     icon.width: width
                     icon.height: height
-                    icon.source: "/main/src/icons/mic.png"
-                    iconColor: "transparent"
+                    mainIcon: "/main/src/assets/mic_Off.png"
+                    pressedIcon: "/main/src/assets/mic_Pressed.png"
+                    alterIcon: "/main/src/assets/mic_On.png"
+                    onClicked: backend.changeVocalSettings()
                 }
 
                 ZButton {
@@ -106,8 +109,9 @@ Drawer {
                     height: parent.height
                     icon.width: width
                     icon.height: height
-                    icon.source: "/main/src/icons/end.png"
-                    iconColor: "transparent"
+                    mainIcon: "/main/src/assets/close_Meeting.png"
+                    pressedIcon: "/main/src/assets/cloese_Meeting_Pressed.png"
+                    onClicked: Qt.quit()
                 }
 
                 ZButton {
@@ -116,8 +120,10 @@ Drawer {
                     height: parent.height*0.9
                     icon.width: width
                     icon.height: height
-                    icon.source: "/main/src/icons/video.png"
-                    iconColor: "transparent"
+                    mainIcon: "/main/src/assets/camera_Off.png"
+                    pressedIcon: "/main/src/assets/camera_Pressed.png"
+                    alterIcon: "/main/src/assets/camera_On.png"
+                    onClicked: backend.changeFeedSettings()
                 }
             }
         }

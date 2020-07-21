@@ -44,6 +44,17 @@ void AudioInputGenerator::start() {
 }
 
 
+void AudioInputGenerator::pause() {
+
+    if (audioIn->state() == QAudio::ActiveState) {
+        audioIn->stop();
+    }
+    else {
+        audioBuffer = audioIn->start();
+    }
+}
+
+
 void AudioInputGenerator::processAudioBuffer() {
 
     auto len = audioIn->bytesReady();

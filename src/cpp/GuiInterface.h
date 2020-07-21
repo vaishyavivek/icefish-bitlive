@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QUdpSocket>
+#include <QCamera>
 //#include <QAudioInput>
 #include <QThread>
 #include "CustomVideoOutput.h"
@@ -34,6 +35,10 @@ public:
 
 public slots:
 
+    void changeFeedSettings();
+
+    void changeVocalSettings();
+
     void initiateConnection(QString peerId, QString password);
 
     void finishConnection();
@@ -51,6 +56,7 @@ signals:
     void sendTextToWorker(QString text);
 
     void startVoiceRecorder();
+    void pauseVoiceRecorder();
     void sendJsonedAudioToWorker(QJsonValue value, size_t size);
 
     void MyIdChanged();
@@ -74,8 +80,10 @@ private:
     QString myId;
     QString password;
     QString username;
+
     QUdpSocket *socket;
 
+    QCamera *camera;
 //    QIODevice *audioBuffer;
 //    QAudioInput *audioIn;
     QThread voiceGenerator;

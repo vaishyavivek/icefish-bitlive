@@ -8,8 +8,8 @@ TextField {
     background: Rectangle {
         implicitWidth: 200
         implicitHeight: 40
-        color: control.enabled ? "transparent" : "#353637"
-        border.color: control.enabled ? "green" : "transparent"
+        color: control.enabled ? "transparent" : "#000000"
+        border.color: control.enabled ? "palegrenn" : "transparent"
         radius: height*0.25
     }
 }

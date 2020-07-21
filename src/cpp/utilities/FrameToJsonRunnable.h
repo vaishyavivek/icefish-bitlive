@@ -4,11 +4,10 @@
 #include <QRunnable>
 #include <QJsonValue>
 #include <QVideoFrame>
-//#include <QOpenGLContext>
-//#include <QOpenGLFunctions>
 #include <QBuffer>
 #include <QImageWriter>
-#include <QDebug>
+//#include <QTransform>
+//#include <QDebug>
 
 
 class FrameToJsonRunnable: public QObject, public QRunnable {
@@ -27,6 +26,10 @@ class FrameToJsonRunnable: public QObject, public QRunnable {
 
             QImage img = frame.image();
             if (!img.isNull()) {
+
+                QTransform rot;
+                rot.rotate(-rotation);
+                img = img.transformed(rot);
 
                 img.scaled(240, 360);
 
@@ -47,11 +50,12 @@ signals:
 
 private:
     QVideoFrame frame;
-
+    int rotation;
 
 public:
-    void setFrame(const QVideoFrame &buffer) {
+    void setFrame(const QVideoFrame &buffer, int Rotation) {
         frame = buffer;
+        rotation = Rotation;
     }
 
 };

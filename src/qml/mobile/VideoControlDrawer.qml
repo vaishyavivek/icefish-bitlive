@@ -40,6 +40,7 @@ Drawer {
                     width: parent.width - height - 10
                     height: parent.height
                     orientation: ListView.Horizontal
+//                    model:
 
                     delegate: Rectangle {
 

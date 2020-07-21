@@ -13,6 +13,8 @@ class CustomVideoOutput: public QObject {
 
     Q_PROPERTY(QAbstractVideoSurface* videoSurface READ VideoSurface WRITE setVideoSurface)
 
+    Q_PROPERTY(int CameraRotation READ CameraRotation WRITE setCameraRotation NOTIFY CameraRotationChanged)
+
     Q_PROPERTY(QString Username READ Username NOTIFY UsernameChanged)
 
 public:
@@ -34,6 +36,16 @@ public:
         }
     }
 
+
+    int CameraRotation() const { return cameraRotation;}
+
+    void setCameraRotation(int CameraRotation) {
+        if(cameraRotation != CameraRotation) {
+            cameraRotation = CameraRotation;
+            emit CameraRotationChanged();
+        }
+    }
+
     void setFormat(int width, int height, QVideoFrame::PixelFormat frameFormat) {
         QSize size(width, height);
         QVideoSurfaceFormat format(size, frameFormat);
@@ -50,7 +62,7 @@ public:
         if (mySurface) {
 
             FrameToJsonRunnable *ftir = new FrameToJsonRunnable();
-            ftir->setFrame(frame);
+            ftir->setFrame(frame, cameraRotation);
             connect(ftir, &FrameToJsonRunnable::setJsonValue, this, &CustomVideoOutput::getJsonValue);
             QThreadPool::globalInstance()->start(ftir);
 
@@ -71,11 +83,13 @@ public:
 
 signals:
     void UsernameChanged();
+    void CameraRotationChanged();
     void getJsonValue(QJsonValue json);
 
 private:
     QString userName;
     QAbstractVideoSurface *mySurface = NULL;
+    int cameraRotation = 0;
     QVideoSurfaceFormat myFormat;
 };
 

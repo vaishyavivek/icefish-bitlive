@@ -33,8 +33,7 @@ void GuiInterface::PrepareMyFeed() {
     for (const QCameraInfo &cameraInfo : cameras) {
         if (cameraInfo.position() == QCamera::FrontFace) {
             camera = new QCamera(cameraInfo);
-            cameraRotation = cameraInfo.orientation();
-            emit CameraRotationChanged();
+            myFeed->setCameraRotation(cameraInfo.orientation());
         }
     }
 

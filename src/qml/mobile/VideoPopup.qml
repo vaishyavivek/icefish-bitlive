@@ -25,8 +25,7 @@ Popup {
         width: parent.width
         height: parent.height
         fillMode: VideoOutput.PreserveAspectCrop
-        orientation: backend.CameraRotation
+        orientation: backend.MyFeed.CameraRotation
         source: backend.MyFeed
-//        Component.onCompleted: console.log(backend.CameraRotation)
     }
 }

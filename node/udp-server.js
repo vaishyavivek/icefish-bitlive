@@ -18,10 +18,10 @@ server.on('message', (message, rinfo) => {
     if (data.type == "Hello") {
         console.log(`Received Hello from ${ip}:${port}`)
 
-        var newUid = Math.floor(Math.random() * (9999999 - 1000000 + 1) + 1000000);
-
         pool.getConnection()
             .then(conn => {
+
+                var newUid = Math.floor(Math.random() * (9999999 - 1000000 + 1) + 1000000);
                 conn.query(`INSERT INTO bitlive.user VALUES(?, INET6_ATON(?), ?)`, [newUid, ip, port]);
 
                 var reply = Buffer.from(JSON.stringify(
@@ -32,9 +32,11 @@ server.on('message', (message, rinfo) => {
 
                 server.send(reply, 0, reply.length, port, ip);
                 console.log(`Sent PeerRegistered to ${ip}:${port}`);
+                conn.end();
             })
             .catch(err => {
-                console.log(err);
+                conn.end();
+                console.error(`ERROR: ${err}`);
             })
     }
     else if (data.type == "ReHello") {
@@ -53,9 +55,11 @@ server.on('message', (message, rinfo) => {
 
                 server.send(reply, 0, reply.length, port, ip);
                 console.log(`Sent ReHelloAckowledge to ${uid}:${ip}:${port}`);
+                conn.end();
             })
             .catch(err => {
-                console.log(err);
+                conn.end();
+                console.error(`ERROR: ${err}`);
             })
     }
     else if (data.type == "PeerConnectRequest") {
@@ -97,12 +101,13 @@ server.on('message', (message, rinfo) => {
                         console.log(`Sent PeerConnectResponse to ${duid} for ${uid} as ${dreply}`);
                     })
                     .catch(err => {
-                        console.log(err);
                         conn.end();
+                        console.error(`ERROR: ${err}`);
                     })
             })
             .catch(err => {
-                console.log(err);
+                conn.end();
+                console.error(`ERROR: ${err}`);
             })
     }
 });

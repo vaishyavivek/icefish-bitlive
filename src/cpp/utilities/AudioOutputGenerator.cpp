@@ -69,5 +69,5 @@ void AudioOutputGenerator::processAudioBuffer(QByteArray &audio_buffer, int comp
     output.resize(size);
 
     audioBuffer->write(output, size);
-
+    output.clear();
 }

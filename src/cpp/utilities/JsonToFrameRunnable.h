@@ -22,6 +22,7 @@ class JsonToFrameRunnable: public QObject, public QRunnable {
             if (frame.isValid()) {
 
                 emit setFrame(frame);
+
             }
         }
     }

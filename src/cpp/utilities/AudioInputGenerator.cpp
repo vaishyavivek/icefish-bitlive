@@ -91,7 +91,7 @@ void AudioInputGenerator::processAudioBuffer() {
             QString str = QString::fromLatin1(output.toBase64().data());
 
             emit setAudioBuffer(str, compressedBytes);
-
+            output.clear();
         }
 
     }

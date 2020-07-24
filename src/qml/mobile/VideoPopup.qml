@@ -2,6 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtMultimedia 5.15
 
+import "../custom"
+
 Popup {
     id: videoPopup
     padding: 0
@@ -26,5 +28,13 @@ Popup {
         fillMode: VideoOutput.PreserveAspectCrop
         orientation: backend.MyFeed.CameraRotation
         source: backend.MyFeed
+    }
+
+    ZComboBox {
+        model: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        width: mainWindow.width*0.25
+        displayText: currentText + "%"
+        currentIndex: backend.MyFeed.QualityBar
+        onCurrentIndexChanged: backend.MyFeed.QualityBar = currentIndex
     }
 }

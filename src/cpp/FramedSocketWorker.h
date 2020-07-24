@@ -48,6 +48,8 @@ signals:
 
     void setJsonedAudio(QJsonValue, int);
 
+    void setDebugMessages(const QString &message);
+
 private: //members
     QString peerId;
     QString password;
@@ -72,6 +74,8 @@ private: //members
     void SendPeerConnectRequest();
 
     void SendPeerConnectAccept(QJsonObject peerData);
+
+    void SendPeerConnectAcceptAgain();
 
     void SendPeerConnectDummy();
 

@@ -5,7 +5,7 @@ import "../custom"
 
 Dialog {
     id: shareDialogBox
-    width: parent.width*0.8
+    width: parent.width*0.7
     height: 240
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnReleaseOutside | Popup.CloseOnEscape
     anchors.centerIn: parent
@@ -29,48 +29,33 @@ Dialog {
 
         Column {
             anchors.fill: parent
-            anchors.margins: 5
-            spacing: 10
+            anchors.margins: 10
+            padding: 20
+            spacing: 15
 
             Text {
                 id: name
                 width: parent.width
-                text: myid.text.length === 0 ? qsTr("Obtaining ID from Bitlive Tracker") : qsTr("Give your Peers these credential to start a Meeting")
-                horizontalAlignment: Text.AlignHCenter
+                text: "Meeting Details"
+                font.bold: true
+                font.pointSize: 16
+                opacity: 0.8
             }
 
             Text {
                 id: myidText
                 width: parent.width
-                text: qsTr("Your Seed ID")
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            Text {
-                id: myid
-                width: parent.width
-                text: backend.MyId
-                font.family: "Arial Black"
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 18
+                text: qsTr("Seed ID: \n" + backend.MyId)
+                font.pointSize: 12
+                opacity: 0.7
             }
 
             Text {
                 id: passwordText
                 width: parent.width
-                text: qsTr("Your Seed Password")
-                horizontalAlignment: Text.AlignHCenter
-            }
-
-            Text {
-                id: password
-                width: parent.width
-                text: backend.Password
-                font.family: "Arial Black"
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                font.pointSize: 18
+                text: qsTr("Seed Password: \n" + backend.Password)
+                font.pointSize: 12
+                opacity: 0.8
             }
 
             ZButton {

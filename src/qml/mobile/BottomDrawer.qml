@@ -35,8 +35,7 @@ Drawer {
             spacing: 15
 
             ZButton {
-                id: muteMyBtn
-                property bool active: true
+                id: muteMyBtnHome
                 width: height
                 height: parent.height
                 icon.width: width
@@ -49,8 +48,7 @@ Drawer {
             }
 
             ZButton {
-                id: hideMyVideoBtn
-                property bool active: true
+                id: hideMyVideoBtnHome
                 width: height
                 height: parent.height
                 icon.width: width
@@ -110,8 +108,6 @@ Drawer {
                     id: initiateConnectionBtn
                     width: parent.width*0.2 - 15
                     height: width
-                    icon.width: width
-                    icon.height: height
                     mainIcon: "/main/src/assets/join_Meeting.png"
 
                     anchors.verticalCenter: parent.verticalCenter
@@ -127,8 +123,6 @@ Drawer {
                 height: parent.height*0.4
                 width: height
                 anchors.horizontalCenter: parent.horizontalCenter
-                icon.width: width
-                icon.height: height
                 mainIcon: "/main/src/assets/new_Meeting.png"
                 font.pointSize: 30
                 font.bold: true
@@ -137,6 +131,11 @@ Drawer {
                     changeToMainRoom()
                     mainRoom.openShareInfo()
                 }
+            }
+
+            ZButton {
+                id: temoBtn
+
             }
         }
     }

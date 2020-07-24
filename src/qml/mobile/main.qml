@@ -10,6 +10,7 @@ Window {
 
     title: qsTr("Icefish Bitlive")
 
+
     VideoPopup {
         id: myVideoPopup
         width: parent.width

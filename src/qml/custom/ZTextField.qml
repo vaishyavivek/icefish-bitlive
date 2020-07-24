@@ -9,7 +9,7 @@ TextField {
         implicitWidth: 200
         implicitHeight: 40
         color: control.enabled ? "transparent" : "#000000"
-        border.color: control.enabled ? "palegrenn" : "transparent"
+        border.color: control.enabled ? "green" : "transparent"
         radius: height*0.25
     }
 }

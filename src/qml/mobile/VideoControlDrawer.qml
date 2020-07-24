@@ -58,11 +58,14 @@ Drawer {
                                 height: width
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 source: "/main/src/assets/default_User_Avatar_" + Math.floor((Math.random() * 5) + 1) + ".png"
+                                autoTransform: true
+                                mipmap: true
                             }
 
                             Text {
                                 id: nameOfParticipant
-                                text: model.modelData.UserName
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                text: model.modelData.Username
                             }
                         }
                         MouseArea {
@@ -77,8 +80,6 @@ Drawer {
                     height: parent.height*0.9
                     width: height
                     anchors.verticalCenter: parent.verticalCenter
-                    icon.width: width
-                    icon.height: height
                     mainIcon: "/main/src/assets/add_New_Member_To_Meeting.png"
                     onClicked: shareDialogBox.open()
                 }
@@ -95,8 +96,7 @@ Drawer {
                     id: muteMyBtn
                     width: height
                     height: parent.height*0.9
-                    icon.width: width
-                    icon.height: height
+//                    checkable: muteMyBtnHome.checked
                     mainIcon: "/main/src/assets/mic_Off.png"
                     pressedIcon: "/main/src/assets/mic_Pressed.png"
                     alterIcon: "/main/src/assets/mic_On.png"
@@ -107,8 +107,6 @@ Drawer {
                     id: endCallBtn
                     width: height
                     height: parent.height
-                    icon.width: width
-                    icon.height: height
                     mainIcon: "/main/src/assets/close_Meeting.png"
                     pressedIcon: "/main/src/assets/cloese_Meeting_Pressed.png"
                     onClicked: Qt.quit()
@@ -118,8 +116,6 @@ Drawer {
                     id: hideMyVideoBtn
                     width: height
                     height: parent.height*0.9
-                    icon.width: width
-                    icon.height: height
                     mainIcon: "/main/src/assets/camera_Off.png"
                     pressedIcon: "/main/src/assets/camera_Pressed.png"
                     alterIcon: "/main/src/assets/camera_On.png"

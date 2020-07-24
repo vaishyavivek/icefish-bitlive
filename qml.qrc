@@ -12,5 +12,6 @@
         <file>src/qml/mobile/ChatBoxDrawer.qml</file>
         <file>src/qml/mobile/VideoControlDrawer.qml</file>
         <file>src/qml/mobile/ShareDialogBox.qml</file>
+        <file>src/qml/custom/ZComboBox.qml</file>
     </qresource>
 </RCC>

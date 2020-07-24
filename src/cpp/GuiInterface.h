@@ -6,6 +6,7 @@
 #include <QCamera>
 //#include <QAudioInput>
 #include <QThread>
+#include <QFile>
 #include "CustomVideoOutput.h"
 
 
@@ -21,6 +22,8 @@ class GuiInterface : public QObject
 
     Q_PROPERTY(QString Password READ Password NOTIFY PasswordChanged)
 
+    Q_PROPERTY(QString DebugMessage READ DebugMessage WRITE setDebugMessage NOTIFY DebugMessageChanged)
+
 public:
     explicit GuiInterface(QString ServerIp, QObject *parent = nullptr);
 
@@ -32,8 +35,28 @@ public:
 
     QString Password() const { return password;}
 
+    QString DebugMessage() const { return debugMessage;}
+
+    void setDebugMessage(const QString &DebugMessage) {
+
+        QTextStream stream(&debugFile);
+        stream << DebugMessage << "\n";
+
+        if(debugMessage != DebugMessage) {
+
+            debugMessage = DebugMessage;
+            emit DebugMessageChanged();
+        }
+    }
+
+    ~GuiInterface() {
+        debugFile.close();
+    }
+
 
 public slots:
+
+    void sharePeerId();
 
     void changeFeedSettings();
 
@@ -62,6 +85,7 @@ signals:
     void MyIdChanged();
     void PasswordChanged();
 
+    void DebugMessageChanged();
 
 private slots:
 
@@ -91,6 +115,9 @@ private:
     QString serverIp;
     CustomVideoOutput *myFeed;
     QList<QObject*> peerFeedList;
+
+    QString debugMessage;
+    QFile debugFile;
 };
 
 #endif // GUIINTERFACE_H

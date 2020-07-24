@@ -8,11 +8,22 @@
 #include <QThreadPool>
 #include <QRandomGenerator>
 
+#ifdef Q_OS_ANDROID
+#include <QAndroidIntent>
+#endif
+
 #include "FramedSocketWorker.h"
 #include "utilities/AudioInputGenerator.h"
 
 GuiInterface::GuiInterface(QString ServerIp, QObject *parent)
     : QObject(parent), serverIp(ServerIp) {
+
+    debugMessage = "";
+
+    debugFile.setFileName("icefish-bitlive.log");
+    if (!debugFile.open(QIODevice::WriteOnly | QIODevice::Append))
+        qDebug() << "Could not open log file";
+
 
     PrepareMyFeed();
 
@@ -36,6 +47,12 @@ void GuiInterface::PrepareMyFeed() {
         }
     }
 
+    QCameraViewfinderSettings viewfinderSettings;
+    viewfinderSettings.setResolution(640, 480);
+    viewfinderSettings.setMinimumFrameRate(5);
+    viewfinderSettings.setMaximumFrameRate(15);
+
+    camera->setViewfinderSettings(viewfinderSettings);
 
     camera->setCaptureMode(QCamera::CaptureVideo);
 
@@ -67,7 +84,7 @@ void GuiInterface::PrepareMyVoice() {
     AudioInputGenerator *aig = new AudioInputGenerator();
     aig->moveToThread(&voiceGenerator);
     connect(&voiceGenerator, &QThread::finished, aig, &QObject::deleteLater);
-    connect(aig, &AudioInputGenerator::setAudioBuffer, this, &GuiInterface::sendJsonedAudioToWorker, Qt::QueuedConnection);
+    connect(aig, &AudioInputGenerator::setAudioBuffer, this, &GuiInterface::sendJsonedAudioToWorker);
     connect(this, &GuiInterface::startVoiceRecorder, aig, &AudioInputGenerator::start);
     connect(this, &GuiInterface::pauseVoiceRecorder, aig, &AudioInputGenerator::pause);
 
@@ -90,6 +107,7 @@ void GuiInterface::SendHello() {
     QJsonDocument doc(obj);
 
     qDebug() << ("Registering With Bitlive Tracker\n");
+    setDebugMessage("Registering With Bitlive Tracker\n");
 
     socket = new QUdpSocket();
 
@@ -121,7 +139,11 @@ void GuiInterface::RegistrationFinished() {
             emit PasswordChanged();
 
             qDebug() << ("Successfully Registered With Bitlive Tracker\n");
+            setDebugMessage("Successfully Registered With Bitlive Tracker\n");
+
             qDebug() << ("Your Id is " + myId + " and Password is " + password + "\n");
+            setDebugMessage("Your Id is " + myId + " and Password is " + password + "\n");
+
 
             createNewWorker();
 
@@ -136,13 +158,22 @@ void GuiInterface::createNewWorker() {
 
     FramedSocketWorker *fsw = new FramedSocketWorker(serverIp, myId, password);
 
-    connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame, Qt::QueuedConnection);
-    connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio, Qt::QueuedConnection);
+    connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame);
+    connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio);
     connect(this, &GuiInterface::sendTextToWorker, fsw, &FramedSocketWorker::sendText);
+    connect(fsw, &FramedSocketWorker::setDebugMessages, this, &GuiInterface::setDebugMessage);
     connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::finishConnection);
 
     peerFeedList.append(fsw);
     emit PeerFeedListChanged();
+}
+
+
+void GuiInterface::sharePeerId() {
+
+#if defined (Q_OS_ANDROID)
+    auto serviceIntent = QAndroidIntent();
+#endif
 }
 
 
@@ -154,6 +185,7 @@ void GuiInterface::initiateConnection(QString peerId, QString password) {
             last_fsw->initiateConnection(peerId, password);
         else {
             qDebug() << "No connection available";
+            setDebugMessage("No connection available");
         }
     }
 

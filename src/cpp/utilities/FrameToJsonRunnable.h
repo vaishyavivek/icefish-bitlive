@@ -22,7 +22,7 @@ class FrameToJsonRunnable: public QObject, public QRunnable {
             qbuffer.open(QIODevice::WriteOnly);
 
             QImageWriter writer(&qbuffer, "JPG");
-            writer.setQuality(10);
+            writer.setQuality(qualityBar*10);
 
             QImage img = frame.image();
             if (!img.isNull()) {
@@ -37,7 +37,6 @@ class FrameToJsonRunnable: public QObject, public QRunnable {
 
                 QString str = QString::fromLatin1(barray.toBase64().data());
                 emit setJsonValue(str);
-
             }
 
         }
@@ -51,11 +50,13 @@ signals:
 private:
     QVideoFrame frame;
     int rotation;
+    int qualityBar;
 
 public:
-    void setFrame(const QVideoFrame &buffer, int Rotation) {
+    void setFrame(const QVideoFrame &buffer, int Rotation, int QualityBar) {
         frame = buffer;
         rotation = Rotation;
+        qualityBar = QualityBar;
     }
 
 };

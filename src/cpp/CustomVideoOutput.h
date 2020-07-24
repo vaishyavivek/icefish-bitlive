@@ -5,6 +5,7 @@
 #include <QAbstractVideoSurface>
 #include <QVideoSurfaceFormat>
 #include <QThreadPool>
+#include <QDebug>
 
 #include "utilities/FrameToJsonRunnable.h"
 
@@ -16,6 +17,8 @@ class CustomVideoOutput: public QObject {
     Q_PROPERTY(int CameraRotation READ CameraRotation WRITE setCameraRotation NOTIFY CameraRotationChanged)
 
     Q_PROPERTY(QString Username READ Username NOTIFY UsernameChanged)
+
+    Q_PROPERTY(int QualityBar READ QualityBar WRITE setQualityBar NOTIFY QualityBarChanged)
 
 public:
     CustomVideoOutput(QString Username, QObject *parent = nullptr)
@@ -50,6 +53,17 @@ public:
         }
     }
 
+    int QualityBar() const { return qualityBar;}
+
+    void setQualityBar(int QualityBar) {
+        if(qualityBar != QualityBar) {
+            qualityBar = QualityBar;
+            emit QualityBarChanged();
+            qDebug() << qualityBar;
+        }
+    }
+
+
     void setFormat(int width, int height, QVideoFrame::PixelFormat frameFormat) {
         QSize size(width, height);
         QVideoSurfaceFormat format(size, frameFormat);
@@ -66,7 +80,7 @@ public:
         if (mySurface) {
 
             FrameToJsonRunnable *ftir = new FrameToJsonRunnable();
-            ftir->setFrame(frame, cameraRotation);
+            ftir->setFrame(frame, cameraRotation, qualityBar + 1);
             connect(ftir, &FrameToJsonRunnable::setJsonValue, this, &CustomVideoOutput::getJsonValue);
             QThreadPool::globalInstance()->start(ftir);
 
@@ -88,12 +102,14 @@ public:
 signals:
     void UsernameChanged();
     void CameraRotationChanged();
+    void QualityBarChanged();
     void getJsonValue(QJsonValue json);
 
 private:
     QString userName;
     QAbstractVideoSurface *mySurface = NULL;
     int cameraRotation = 0;
+    int qualityBar = 0;
     QVideoSurfaceFormat myFormat;
 };
 

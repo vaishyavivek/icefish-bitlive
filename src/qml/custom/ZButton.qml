@@ -9,7 +9,7 @@ Button {
     property string alterIcon: mainIcon
 
     text: qsTr("Button")
-    display: AbstractButton.IconOnly
+//    display: AbstractButton.IconOnly
     checked: checkable
 
     contentItem: Rectangle{
@@ -17,13 +17,13 @@ Button {
         height: control.height
         color: "transparent"
 
-        Image{
+        Image {
             id: image
             source: (control.pressed ? pressedIcon : (control.checked ? alterIcon : mainIcon))
-            sourceSize.width: icon.width
-            sourceSize.height: icon.height
-            fillMode: Image.PreserveAspectFit
-            anchors.centerIn: parent
+            width: parent.width
+            height: width
+            autoTransform: true
+            mipmap: true
         }
     }
 
@@ -38,4 +38,6 @@ Button {
     onClicked: {
         checkable = !checkable
     }
+
+    Component.onCompleted: console.log(width, height)
 }

@@ -1,5 +1,4 @@
 QT += quick multimedia
-android: QT += androidextras
 
 CONFIG += c++11
 
@@ -19,7 +18,8 @@ SOURCES += \
         src/cpp/GuiInterface.cpp \
         src/cpp/main.cpp \
         src/cpp/utilities/AudioInputGenerator.cpp \
-        src/cpp/utilities/AudioOutputGenerator.cpp
+        src/cpp/utilities/AudioOutputGenerator.cpp \
+        src/cpp/utilities/ShareUtils.cpp
 
 RESOURCES += qml.qrc \
     icons.qrc
@@ -47,7 +47,8 @@ HEADERS += \
     src/cpp/utilities/FrameToJsonRunnable.h \
     src/cpp/utilities/JsonToFrameRunnable.h \
     src/cpp/FramedSocketWorker.h \
-    src/cpp/GuiInterface.h
+    src/cpp/GuiInterface.h \
+    src/cpp/utilities/ShareUtils.h
 
 
 unix:!android {
@@ -63,8 +64,13 @@ DEPENDPATH += $$PWD/src/opus-dev-lib/include
 unix:!android {
     PRE_TARGETDEPS += $$PWD/src/opus-dev-lib/lib/unix/x86_64/libopus.a
 }
+
 android {
+    QT += androidextras
     PRE_TARGETDEPS += $$PWD/src/opus-dev-lib/lib/armeabi-v7a/libopus.a
+    OTHER_FILES += src/cpp/utilities/android_data/src/com/lasconic/QShareUtils.java
+    SOURCES += src/cpp/utilities/android/androidshareutils.cpp
+    HEADERS += src/cpp/utilities/android/androidshareutils.h
 }
 
 DISTFILES += \

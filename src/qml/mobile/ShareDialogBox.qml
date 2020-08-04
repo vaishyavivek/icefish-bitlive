@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 
+import com.lasconic 1.0
 import "../custom"
 
 Dialog {
@@ -9,6 +10,10 @@ Dialog {
     height: 200
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnReleaseOutside | Popup.CloseOnEscape
     anchors.centerIn: parent
+
+    ShareUtils {
+        id: shareUtils
+    }
 
     background: Rectangle {
 
@@ -55,7 +60,10 @@ Dialog {
                 height: 50
                 anchors.horizontalCenter: parent.horizontalCenter
                 mainIcon: "/main/src/assets/share.png"
-//                onClicked: backend.changeFeedSettings()
+                onClicked: {
+
+                    shareUtils.share("Lets get live in bits", backend.RoomId)
+                }
             }
         }
     }

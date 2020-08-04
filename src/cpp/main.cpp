@@ -4,6 +4,7 @@
 #include <QIcon>
 
 #include "GuiInterface.h"
+#include "utilities/ShareUtils.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
 //#else
 //#define MAINFILE "qrc:/src/qml/desktop/main.qml"
 //#endif
+
+    qmlRegisterType<ShareUtils> ("com.lasconic", 1, 0, "ShareUtils");
 
 
     QQmlApplicationEngine engine;

@@ -22,6 +22,7 @@
 
 #include "ShareUtils.h"
 
+
 #ifdef Q_OS_IOS
 #include "ios/iosshareutils.h"
 #endif
@@ -30,9 +31,11 @@
 #include "android/androidshareutils.h"
 #endif
 
+
+
 ShareUtils::ShareUtils(QQuickItem *parent)
-    : QQuickItem(parent)
-{
+    : QQuickItem(parent), isClipboardSet(false) {
+
 #if defined(Q_OS_IOS)
     _pShareUtils = new IosShareUtils(this);
 #elif defined(Q_OS_ANDROID)
@@ -42,7 +45,9 @@ ShareUtils::ShareUtils(QQuickItem *parent)
 #endif
 }
 
-void ShareUtils::share(const QString &text, const QUrl &url)
-{
+void ShareUtils::share(const QString &text, const QUrl &url) {
+
     _pShareUtils->share(text, url);
+    isClipboardSet = true;
+    emit IsClipboardSetChanged();
 }

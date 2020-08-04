@@ -24,22 +24,40 @@
 #define SHAREUTILS_H
 
 #include <QQuickItem>
+#include <QClipboard>
+#include <QGuiApplication>
 
 class PlatformShareUtils : public QQuickItem
 {
 public:
     PlatformShareUtils(QQuickItem *parent = 0) : QQuickItem(parent){}
     virtual ~PlatformShareUtils() {}
-    virtual void share(const QString &text, const QUrl &url){ qDebug() << text << url; }
+    virtual void share(const QString &text, const QUrl &url){
+
+        Q_UNUSED(text);
+
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setText(url.toString());
+    }
 };
 
 class ShareUtils : public QQuickItem
 {
     Q_OBJECT
+    Q_PROPERTY(bool IsClipboardSet READ IsClipboardSet NOTIFY IsClipboardSetChanged)
+
     PlatformShareUtils* _pShareUtils;
 public:
     explicit ShareUtils(QQuickItem *parent = 0);
     Q_INVOKABLE void share(const QString &text, const QUrl &url);
+
+    bool IsClipboardSet() const { return isClipboardSet;}
+
+signals:
+    void IsClipboardSetChanged();
+
+private:
+    bool isClipboardSet;
 };
 
 #endif //SHAREUTILS_H

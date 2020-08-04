@@ -50,7 +50,8 @@ Dialog {
             Text {
                 id: myidText
                 width: parent.width
-                text: qsTr("Seed Room ID: \n" + backend.RoomId)
+                text: qsTr("Seed Room ID: <br>" + backend.RoomId + (shareUtils.IsClipboardSet ? "   <i>Copied</i>" : ""))
+                textFormat: Text.StyledText
                 font.pointSize: 12
                 opacity: 0.7
             }

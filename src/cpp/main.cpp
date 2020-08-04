@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QIcon>
 
 #include "GuiInterface.h"
 
@@ -9,6 +10,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app(argc, argv);
+    app.setWindowIcon(QIcon(":/main/android/icon.svg"));
 
     QCoreApplication::setApplicationName("IceFish Bitlive");
     QCoreApplication::setOrganizationDomain("icefish.host");
@@ -32,7 +34,7 @@ int main(int argc, char *argv[])
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
 
-    auto gui = new GuiInterface("13.234.174.90");
+    auto gui = new GuiInterface("3.6.254.253");
 
     auto ctxt = engine.rootContext();
     ctxt->setContextProperty("backend", gui);

@@ -15,18 +15,28 @@ class FramedSocketWorker : public CustomVideoOutput
 
     Q_PROPERTY(QString TextReceived READ TextReceived NOTIFY TextReceivedChanged)
 
+    Q_PROPERTY(bool IsActive READ IsActive WRITE setIsActive NOTIFY IsActiveChanged)
+
 public:
 
     explicit FramedSocketWorker(QString ServerIp, QString PeerId, QString Password, QObject *parent = nullptr);
 
     QString TextReceived() const { return textReceived;}
 
+    bool IsActive() const { return isActive;}
+    void setIsActive(bool IsActive) {
+        if(isActive != IsActive) {
+            isActive = IsActive;
+            emit IsActiveChanged();
+        }
+    }
 
 public slots:
 
     bool isConnectedToPeer();
 
-    void initiateConnection(QString destinationPeerId, QString password);
+    void initiateConnection(QString seedId, QString password, QString peerName);
+
 
     void sendText(QString data);
 
@@ -42,6 +52,8 @@ private slots:
 signals:
     void TextReceivedChanged();
 
+    void IsActiveChanged();
+
     void connectionFinished();
 
     void startAudioOutput();
@@ -49,6 +61,7 @@ signals:
     void setJsonedAudio(QJsonValue, int);
 
     void setDebugMessages(const QString &message);
+
 
 private: //members
     QString peerId;
@@ -60,11 +73,10 @@ private: //members
 
     QJsonObject otherPeer;
     bool isConnected = false;
+    bool isActive = false;
 
     QString textReceived;
 
-//    QAudioOutput *audioOutput;
-//    QIODevice *audioDevice;
     QThread voiceReceiver;
 
     //methods

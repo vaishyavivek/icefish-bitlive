@@ -14,9 +14,9 @@ class CustomVideoOutput: public QObject {
 
     Q_PROPERTY(QAbstractVideoSurface* videoSurface READ VideoSurface WRITE setVideoSurface)
 
-    Q_PROPERTY(int CameraRotation READ CameraRotation WRITE setCameraRotation NOTIFY CameraRotationChanged)
+    Q_PROPERTY(QString Username READ Username WRITE setUserName NOTIFY UsernameChanged)
 
-    Q_PROPERTY(QString Username READ Username NOTIFY UsernameChanged)
+    Q_PROPERTY(int CameraRotation READ CameraRotation WRITE setCameraRotation NOTIFY CameraRotationChanged)
 
     Q_PROPERTY(int QualityBar READ QualityBar WRITE setQualityBar NOTIFY QualityBarChanged)
 
@@ -44,25 +44,6 @@ public:
 
     }
 
-    int CameraRotation() const { return cameraRotation;}
-
-    void setCameraRotation(int CameraRotation) {
-        if(cameraRotation != CameraRotation) {
-            cameraRotation = CameraRotation;
-            emit CameraRotationChanged();
-        }
-    }
-
-    int QualityBar() const { return qualityBar;}
-
-    void setQualityBar(int QualityBar) {
-        if(qualityBar != QualityBar) {
-            qualityBar = QualityBar;
-            emit QualityBarChanged();
-            qDebug() << qualityBar;
-        }
-    }
-
 
     void setFormat(int width, int height, QVideoFrame::PixelFormat frameFormat) {
         QSize size(width, height);
@@ -75,6 +56,7 @@ public:
             mySurface->start(myFormat);
         }
     }
+
 
     void setLocalFrame(const QVideoFrame &frame) {
         if (mySurface) {
@@ -89,6 +71,7 @@ public:
         }
     }
 
+
     void setNetworkFrame(const QVideoFrame &frame) {
         if (mySurface) {
             setFormat(frame.width(), frame.height(), frame.pixelFormat());
@@ -96,20 +79,54 @@ public:
         }
     }
 
+
     QString Username() const { return userName;}
+
+    void setUserName(const QString &UserName) {
+        if (userName != UserName) {
+            userName = UserName;
+            emit UsernameChanged();
+        }
+    }
+
+
+    int CameraRotation() const { return cameraRotation;}
+
+    void setCameraRotation(int CameraRotation) {
+        if(cameraRotation != CameraRotation) {
+            cameraRotation = CameraRotation;
+            emit CameraRotationChanged();
+        }
+    }
+
+
+    int QualityBar() const { return qualityBar;}
+
+    void setQualityBar(int QualityBar) {
+        if(qualityBar != QualityBar) {
+            qualityBar = QualityBar;
+            emit QualityBarChanged();
+            qDebug() << qualityBar;
+        }
+    }
 
 
 signals:
+
     void UsernameChanged();
+
     void CameraRotationChanged();
+
     void QualityBarChanged();
+
+
     void getJsonValue(QJsonValue json);
 
 private:
     QString userName;
-    QAbstractVideoSurface *mySurface = NULL;
     int cameraRotation = 0;
     int qualityBar = 0;
+    QAbstractVideoSurface *mySurface = NULL;
     QVideoSurfaceFormat myFormat;
 };
 

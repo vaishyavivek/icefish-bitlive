@@ -96,11 +96,11 @@ Drawer {
                     id: muteMyBtn
                     width: height
                     height: parent.height*0.9
-//                    checkable: muteMyBtnHome.checked
                     mainIcon: "/main/src/assets/mic_Off.png"
                     pressedIcon: "/main/src/assets/mic_Pressed.png"
                     alterIcon: "/main/src/assets/mic_On.png"
-                    onClicked: backend.changeVocalSettings()
+                    onClicked: backend.IsAudioRunning = !checked
+                    checked: backend.IsAudioRunning
                 }
 
                 ZButton {
@@ -119,7 +119,8 @@ Drawer {
                     mainIcon: "/main/src/assets/camera_Off.png"
                     pressedIcon: "/main/src/assets/camera_Pressed.png"
                     alterIcon: "/main/src/assets/camera_On.png"
-                    onClicked: backend.changeFeedSettings()
+                    onClicked: backend.IsVideoRunning = !checked
+                    checked: backend.IsVideoRunning
                 }
             }
         }

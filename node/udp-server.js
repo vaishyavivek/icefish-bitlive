@@ -8,6 +8,7 @@ const pool = mariadb.createPool({
     password: 'noPassword'
 });
 
+//create table user(userid varchar(10), public_ip varbinary(16), next_port int);
 
 server.on('message', (message, rinfo) => {
 
@@ -21,7 +22,7 @@ server.on('message', (message, rinfo) => {
         pool.getConnection()
             .then(conn => {
 
-                var newUid = Math.floor(Math.random() * (9999999 - 1000000 + 1) + 1000000);
+                var newUid = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
                 conn.query(`INSERT INTO bitlive.user VALUES(?, INET6_ATON(?), ?)`, [newUid, ip, port]);
 
                 var reply = Buffer.from(JSON.stringify(
@@ -93,12 +94,13 @@ server.on('message', (message, rinfo) => {
                             type: "PeerConnectInitiate",
                             peerId: uid,
                             password: data.password,
+                            peerName: data.peerName,
                             publicIp: ip,
                             nextPort: port
                         }));
 
                         server.send(dreply, 0, dreply.length, sendPacket['nextPort'], sendPacket['publicIp']);
-                        console.log(`Sent PeerConnectResponse to ${duid} for ${uid} as ${dreply}`);
+                        console.log(`Sent PeerConnectInitiate to ${duid} for ${uid} as ${dreply}`);
                     })
                     .catch(err => {
                         conn.end();

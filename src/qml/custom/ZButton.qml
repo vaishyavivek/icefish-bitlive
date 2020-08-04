@@ -19,7 +19,7 @@ Button {
 
         Image {
             id: image
-            source: (control.pressed ? pressedIcon : (control.checked ? alterIcon : mainIcon))
+            source: (control.pressed ? pressedIcon : (control.checked ? mainIcon : alterIcon))
             width: parent.width
             height: width
             autoTransform: true
@@ -39,5 +39,5 @@ Button {
         checkable = !checkable
     }
 
-    Component.onCompleted: console.log(width, height)
+//    Component.onCompleted: console.log(width, height)
 }

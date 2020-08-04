@@ -6,7 +6,7 @@ import "../custom"
 Drawer {
     id: bottomDrawer
     width: parent.width
-    height: parent.height*0.5
+    height: parent.height*0.45
     edge: Qt.BottomEdge
     interactive: false
 
@@ -43,7 +43,8 @@ Drawer {
                 mainIcon: "/main/src/assets/mic_Off.png"
                 pressedIcon: "/main/src/assets/mic_Pressed.png"
                 alterIcon: "/main/src/assets/mic_On.png"
-                onClicked: backend.changeVocalSettings()
+                onClicked: backend.IsAudioRunning = !checked
+                checked: backend.IsAudioRunning
 
             }
 
@@ -56,7 +57,8 @@ Drawer {
                 mainIcon: "/main/src/assets/camera_Off.png"
                 pressedIcon: "/main/src/assets/camera_Pressed.png"
                 alterIcon: "/main/src/assets/camera_On.png"
-                onClicked: backend.changeFeedSettings()
+                onClicked: backend.IsVideoRunning = !checked
+                checked: backend.IsVideoRunning
 
             }
 
@@ -64,78 +66,74 @@ Drawer {
 
 
         Column {
-            width: parent.width*0.8
-            height: parent.height*0.8
+            id: mainContentJoin
+            width: background.width*0.9
+            height: background.height - background.width*0.1
             anchors.centerIn: parent
-            spacing: height*0.1
+            spacing: background.width*0.05
 
             Row {
                 width: parent.width
-                height: parent.height*0.5
-                spacing: 15
+                height: parent.height*0.5 - parent.spacing
+                spacing: parent.spacing
 
                 Column {
-                    width: parent.width*0.8
+                    width: parent.width*0.8 - parent.spacing
                     height: parent.height
-                    spacing: 15
+                    spacing: parent.spacing
 
                     ZTextField {
                         id: peerName
                         width: parent.width
-                        height: parent.height*0.3
+                        height: parent.height*0.5
                         placeholderText: "Your Name (optional)"
                         onAccepted: peerId.focus
                     }
 
-                    ZTextField {
-                        id: peerId
-                        width: parent.width
-                        height: parent.height*0.3
-                        placeholderText: "Peer ID"
-                        onAccepted: peerPassword.focus
-                    }
 
                     ZTextField {
-                        id: peerPassword
+                        id: seedId
                         width: parent.width
-                        height: parent.height*0.3
-                        placeholderText: "Peer Password"
-                        onAccepted: backend.initiateConnection(peerId.text, text)
+                        height: parent.height*0.5
+                        placeholderText: "Seed Room Id"
+                        onAccepted: backend.initiateConnection(text, peerName.text)//backend.initiateConnection(peerId.text, text)
+                        onTextChanged: {
+                            if (text.length > 3 && text.charAt(3) != "-")
+                                text = text.slice(0, 3) + "-" + text.slice(3)
+                            if (text.length >7 && text.charAt(7) != "-")
+                                text = text.slice(0, 7) + "-" +text.slice(7)
+                        }
                     }
                 }
 
                 ZButton {
                     id: initiateConnectionBtn
-                    width: parent.width*0.2 - 15
+                    topPadding: parent.spacing
+                    width: parent.width*0.2
                     height: width
                     mainIcon: "/main/src/assets/join_Meeting.png"
-
                     anchors.verticalCenter: parent.verticalCenter
                     onClicked: {
 
-                        backend.initiateConnection(peerId.text, peerPassword.text)
+                        backend.initiateConnection(seedId.text, peerName.text)
+//                        backend.initiateConnection(peerId.text, peerPassword.text)
                     }
                 }
             }
 
+
             ZButton {
                 id: createMeetingPageSwipeBtn
-                height: parent.height*0.4
+                topPadding: parent.spacing
+                height: parent.height*0.5
                 width: height
                 anchors.horizontalCenter: parent.horizontalCenter
                 mainIcon: "/main/src/assets/new_Meeting.png"
-                font.pointSize: 30
-                font.bold: true
                 onClicked: {
 
                     changeToMainRoom()
                     mainRoom.openShareInfo()
                 }
-            }
-
-            ZButton {
-                id: temoBtn
-
             }
         }
     }

@@ -18,35 +18,46 @@ class GuiInterface : public QObject
 
     Q_PROPERTY(QList<QObject*> PeerFeedList READ PeerFeedList NOTIFY PeerFeedListChanged)
 
-    Q_PROPERTY(QString MyId READ MyId NOTIFY MyIdChanged)
+    Q_PROPERTY(QString RoomId READ RoomId NOTIFY RoomIdChanged)
 
-    Q_PROPERTY(QString Password READ Password NOTIFY PasswordChanged)
+    Q_PROPERTY(bool IsVideoRunning READ IsVideoRunning WRITE setIsVideoRunning NOTIFY IsVideoRunningChanged)
 
-    Q_PROPERTY(QString DebugMessage READ DebugMessage WRITE setDebugMessage NOTIFY DebugMessageChanged)
+    Q_PROPERTY(bool IsAudioRunning READ IsAudioRunning WRITE setIsAudioRunning NOTIFY IsAudioRunningChanged)
+
 
 public:
     explicit GuiInterface(QString ServerIp, QObject *parent = nullptr);
 
+
+    //returns my video stream from camera
     CustomVideoOutput *MyFeed() const { return myFeed; }
 
+
+    //returns framedSocketWorker list of all the peers
     QList<QObject*> PeerFeedList() { return peerFeedList; }
 
-    QString MyId() const { return myId;}
 
-    QString Password() const { return password;}
+    //returns seedid + password
+    QString RoomId() const { return roomId;}
 
-    QString DebugMessage() const { return debugMessage;}
 
+    //controls whether the camera feed is running
+    bool IsVideoRunning() { return camera->state() == QCamera::ActiveState; }
+    void setIsVideoRunning(bool IsVideoRunning);
+
+
+    //instruct the videogenerator thread to stop or continue processing
+    bool IsAudioRunning() const{ return isAudioRunning;}
+    void setIsAudioRunning(bool IsAudioRunning);
+
+
+    //write the debug message to 'icefish-bitlive.log' file
     void setDebugMessage(const QString &DebugMessage) {
 
+        QDateTime local(QDateTime::currentDateTime());
+
         QTextStream stream(&debugFile);
-        stream << DebugMessage << "\n";
-
-        if(debugMessage != DebugMessage) {
-
-            debugMessage = DebugMessage;
-            emit DebugMessageChanged();
-        }
+        stream << local.toString() << " >> " << DebugMessage << "\n";
     }
 
     ~GuiInterface() {
@@ -56,13 +67,10 @@ public:
 
 public slots:
 
+    //use android intent to share the room id
     void sharePeerId();
 
-    void changeFeedSettings();
-
-    void changeVocalSettings();
-
-    void initiateConnection(QString peerId, QString password);
+    void initiateConnection(QString seedRoomid, QString peerName);
 
     void finishConnection();
 
@@ -72,20 +80,25 @@ public slots:
 
 signals:
 
+    void RoomIdChanged();
+
+    void IsVideoRunningChanged();
+
+    void IsAudioRunningChanged();
+
     void MyFeedChanged();
+
     void PeerFeedListChanged();
+
     void switchToMainRoomView();
 
     void sendTextToWorker(QString text);
 
     void startVoiceRecorder();
     void pauseVoiceRecorder();
+
     void sendJsonedAudioToWorker(QJsonValue value, size_t size);
 
-    void MyIdChanged();
-    void PasswordChanged();
-
-    void DebugMessageChanged();
 
 private slots:
 
@@ -101,19 +114,25 @@ private:
 
     void SendHello();
 
+
+    QString serverIp;
+
+
+    QString roomId;
     QString myId;
     QString password;
-    QString username;
+
 
     QUdpSocket *socket;
 
     QCamera *camera;
-//    QIODevice *audioBuffer;
-//    QAudioInput *audioIn;
-    QThread voiceGenerator;
 
-    QString serverIp;
+    QThread voiceGenerator;
+    bool isAudioRunning;
+
+
     CustomVideoOutput *myFeed;
+
     QList<QObject*> peerFeedList;
 
     QString debugMessage;

@@ -6,7 +6,7 @@ import "../custom"
 Dialog {
     id: shareDialogBox
     width: parent.width*0.7
-    height: 240
+    height: 200
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnReleaseOutside | Popup.CloseOnEscape
     anchors.centerIn: parent
 
@@ -45,17 +45,9 @@ Dialog {
             Text {
                 id: myidText
                 width: parent.width
-                text: qsTr("Seed ID: \n" + backend.MyId)
+                text: qsTr("Seed Room ID: \n" + backend.RoomId)
                 font.pointSize: 12
                 opacity: 0.7
-            }
-
-            Text {
-                id: passwordText
-                width: parent.width
-                text: qsTr("Seed Password: \n" + backend.Password)
-                font.pointSize: 12
-                opacity: 0.8
             }
 
             ZButton {

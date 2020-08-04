@@ -62,10 +62,13 @@ void GuiInterface::PrepareMyFeed() {
     }
 
     camera->start();
+    emit IsVideoRunningChanged();
 }
 
 
-void GuiInterface::changeFeedSettings() {
+void GuiInterface::setIsVideoRunning(bool IsVideoRunning) {
+
+    Q_UNUSED(IsVideoRunning);
 
     if (camera->status() == QCamera::ActiveStatus) {
         camera->stop();
@@ -74,6 +77,7 @@ void GuiInterface::changeFeedSettings() {
     else {
         camera->start();
     }
+    emit IsVideoRunningChanged();
 }
 
 
@@ -91,13 +95,21 @@ void GuiInterface::PrepareMyVoice() {
     voiceGenerator.start();
     emit startVoiceRecorder();
 
+    isAudioRunning = true;
+
 }
 
 
-void GuiInterface::changeVocalSettings() {
+void GuiInterface::setIsAudioRunning(bool IsAudioRunning) {
+
+    Q_UNUSED(IsAudioRunning);
 
     emit pauseVoiceRecorder();
+    isAudioRunning = !isAudioRunning;
+    emit IsAudioRunningChanged();
 }
+
+
 
 
 void GuiInterface::SendHello() {
@@ -106,8 +118,8 @@ void GuiInterface::SendHello() {
     obj["type"] = "Hello";
     QJsonDocument doc(obj);
 
-    qDebug() << ("Registering With Bitlive Tracker\n");
-    setDebugMessage("Registering With Bitlive Tracker\n");
+//    qDebug() << ("Registering With Bitlive Tracker\n");
+    setDebugMessage("Registering With Bitlive Tracker");
 
     socket = new QUdpSocket();
 
@@ -133,16 +145,17 @@ void GuiInterface::RegistrationFinished() {
         if( json["type"].toString() == "PeerRegistered") {
 
             myId = QString::number( json["peerId"].toInt());
-            emit MyIdChanged();
 
             password = (QString::number(QRandomGenerator::global()->generate(), 16));
-            emit PasswordChanged();
+            password = password.mid(0, 4);
 
-            qDebug() << ("Successfully Registered With Bitlive Tracker\n");
-            setDebugMessage("Successfully Registered With Bitlive Tracker\n");
+            roomId = myId;
+            roomId.insert(3, "-");
+            roomId += "-" + password;
+            emit RoomIdChanged();
 
-            qDebug() << ("Your Id is " + myId + " and Password is " + password + "\n");
-            setDebugMessage("Your Id is " + myId + " and Password is " + password + "\n");
+            setDebugMessage("Successfully Registered With Bitlive Tracker");
+            setDebugMessage("Your Id is " + myId + " and Password is " + password);
 
 
             createNewWorker();
@@ -177,19 +190,24 @@ void GuiInterface::sharePeerId() {
 }
 
 
-void GuiInterface::initiateConnection(QString peerId, QString password) {
+
+void GuiInterface::initiateConnection(QString seedRoomId, QString peerName) {
+
+    //input seedRoomId is in the form of 123-456-abcd
+    QString seedId = seedRoomId.mid(0, 3) + seedRoomId.mid(4, 3);
+    QString password = seedRoomId.mid(8, 4);
 
     if (peerFeedList.length() > 0) {
         auto last_fsw = qobject_cast<FramedSocketWorker*>(peerFeedList.last());
         if (!last_fsw->isConnectedToPeer())
-            last_fsw->initiateConnection(peerId, password);
+            last_fsw->initiateConnection(seedId, password, peerName);
         else {
             qDebug() << "No connection available";
             setDebugMessage("No connection available");
         }
     }
-
 }
+
 
 
 void GuiInterface::finishConnection() {

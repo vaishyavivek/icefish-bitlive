@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QTimer>
 #include <QThreadPool>
+#include <QDebug>
 
 #include "utilities/AudioOutputGenerator.h"
 
@@ -50,7 +51,7 @@ void FramedSocketWorker::SendReHello() {
     obj["type"] = "ReHello";
     obj["peerId"] = peerId;
 
-    qDebug() << "Creating New Socket connection with Server";
+//    qDebug() << "Creating New Socket connection with Server";
     emit setDebugMessages("Creating New Socket connection with Server");
 
     QJsonDocument doc(obj);
@@ -64,10 +65,11 @@ bool FramedSocketWorker::isConnectedToPeer() {
 }
 
 
-void FramedSocketWorker::initiateConnection(QString destinationPeerId, QString password) {
-    otherPeer["peerId"] = destinationPeerId;
-    otherPeer["password"] = password;
+void FramedSocketWorker::initiateConnection(QString seedId, QString password, QString peerName) {
 
+    otherPeer["peerId"] = seedId;
+    otherPeer["password"] = password;
+    otherPeer["peerName"] = peerName;
 
     tries = 0;
     SendPeerConnectRequest();
@@ -86,9 +88,10 @@ void FramedSocketWorker::SendPeerConnectRequest() {
         obj["peerId"] = peerId;
         obj["destinationPeerId"] = otherPeer["peerId"];
         obj["password"] = otherPeer["password"];
+        obj["peerName"] = otherPeer["peerName"];
 
-        qDebug() << ("Sending PeerConnectRequest to " + otherPeer["peerId"].toString() + "\n");
-        emit setDebugMessages("Sending PeerConnectRequest to " + otherPeer["peerId"].toString() + "\n");
+//        qDebug() << ("Sending PeerConnectRequest to " + otherPeer["peerId"].toString() + "\n");
+        emit setDebugMessages("Sending PeerConnectRequest to " + otherPeer["peerId"].toString());
 
         QJsonDocument doc(obj);
         tries++;
@@ -106,8 +109,9 @@ void FramedSocketWorker::SendPeerConnectDummy() {
         QJsonObject obj;
         obj["type"] = "PeerConnectDummy";
 
-        qDebug() << ("Sending PeerConnectDummy to " + otherPeer["peerId"].toString() + "\n");
-        emit setDebugMessages("Sending PeerConnectDummy to " + otherPeer["peerId"].toString() + "\n");
+//        qDebug() << ("Sending PeerConnectDummy to " + otherPeer["peerId"].toString() + "\n");
+        emit setDebugMessages("Sending PeerConnectDummy to " + otherPeer["peerId"].toString() +
+                " > " + otherPeer["publicIp"].toString() + ":" + QString::number(otherPeer["nextPort"].toInt()));
 
         QJsonDocument doc(obj);
         tries++;
@@ -122,13 +126,13 @@ void FramedSocketWorker::SendPeerConnectDummy() {
 
 void FramedSocketWorker::SendPeerConnectAckowledge() {
 
-    if(tries >= 6 && tries < 8) {
+    if(tries >= 6 && tries < 9) {
 
         QJsonObject obj;
         obj["type"] = "PeerConnectAcknowledge";
 
-        qDebug() << ("Sending PeerConnectAcknowledge to " + otherPeer["peerId"].toString() + "\n");
-        emit setDebugMessages("Sending PeerConnectAcknowledge to " + otherPeer["peerId"].toString() + "\n");
+//        qDebug() << ("Sending PeerConnectAcknowledge to " + otherPeer["peerId"].toString() + "\n");
+        emit setDebugMessages("Sending PeerConnectAcknowledge to " + otherPeer["peerId"].toString());
 
         QJsonDocument doc(obj);
         tries++;
@@ -150,14 +154,16 @@ void FramedSocketWorker::SendPeerConnectAccept(QJsonObject peerData) {
         peerData.remove("password");
         peerData.remove("type");
         otherPeer = peerData;
+        setUserName(otherPeer["peerName"].toString());
 
         tries = 1;
 
         QJsonObject obj;
         obj["type"] = "PeerConnectAccept";
 
-        qDebug() << ("Sending PeerConnectAccept to " + otherPeer["peerId"].toString() + "\n");
-        emit setDebugMessages("Sending PeerConnectAccept to " + otherPeer["peerId"].toString() + "\n");
+//        qDebug() << ("Sending PeerConnectAccept to " + otherPeer["peerId"].toString() + "\n");
+        emit setDebugMessages("Sending PeerConnectAccept to " + otherPeer["peerId"].toString() +
+                " > " + otherPeer["publicIp"].toString() + ":" + QString::number(otherPeer["nextPort"].toInt()));
 
         QJsonDocument doc(obj);
         socket->writeDatagram(doc.toJson(QJsonDocument::Compact),
@@ -178,8 +184,9 @@ void FramedSocketWorker::SendPeerConnectAcceptAgain() {
         QJsonObject obj;
         obj["type"] = "PeerConnectAccept";
 
-        qDebug() << ("Sending PeerConnectAcceptAgain to " + otherPeer["peerId"].toString() + "\n");
-        emit setDebugMessages("Sending PeerConnectAcceptAgain to " + otherPeer["peerId"].toString() + "\n");
+//        qDebug() << ("Sending PeerConnectAcceptAgain to " + otherPeer["peerId"].toString() + "\n");
+        emit setDebugMessages("Sending PeerConnectAcceptAgain to " + otherPeer["peerId"].toString()+
+                " > " + otherPeer["publicIp"].toString() + ":" + QString::number(otherPeer["nextPort"].toInt()));
 
         QJsonDocument doc(obj);
         socket->writeDatagram(doc.toJson(QJsonDocument::Compact),
@@ -196,8 +203,8 @@ void FramedSocketWorker::SendPeerConnectFinish() {
     QJsonObject obj;
     obj["type"] = "PeerConnectFinish";
 
-    qDebug() << ("Sending PeerConnectFinish to " + otherPeer["peerId"].toString() + "\n");
-    emit setDebugMessages("Sending PeerConnectFinish to " + otherPeer["peerId"].toString() + "\n");
+//    qDebug() << ("Sending PeerConnectFinish to " + otherPeer["peerId"].toString() + "\n");
+    emit setDebugMessages("Sending PeerConnectFinish to " + otherPeer["peerId"].toString());
 
     QJsonDocument doc(obj);
     tries++;
@@ -231,13 +238,15 @@ void FramedSocketWorker::ReadMessage() {
 
         if( typeOfPacket  == "ReHelloAcknowledge") {
 
-            qDebug() << "Received ReHello Ack";
+//            qDebug() << "Received ReHello Ack";
             emit setDebugMessages("Received ReHello Ack");
         }
 
         /* Received by Sender */
         else if( typeOfPacket == "PeerConnectResponse") {
 
+            emit setDebugMessages("Received PeerConnectResponse for "
+                                  + json["publicIp"].toString() + ":" + QString::number(json["nextPort"].toInt()));
             tries = 3;
 
             json.remove("type");
@@ -247,6 +256,7 @@ void FramedSocketWorker::ReadMessage() {
 
         else if( typeOfPacket == "PeerConnectAccept") {
 
+            emit setDebugMessages("Received PeerConnectAccept");
             tries = 6;
 
             SendPeerConnectAckowledge();
@@ -254,11 +264,12 @@ void FramedSocketWorker::ReadMessage() {
 
         else if( typeOfPacket == "PeerConnectFinish") {
 
-            tries = 9;
+            emit setDebugMessages("Received PeerConnectFinish");
+            tries = 10;
             emit startAudioOutput();
 
-            qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
-            emit setDebugMessages( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
+//            qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
+            emit setDebugMessages( "Successfully connected with peer " + otherPeer["peerId"].toString());
 
             isConnected = true;
             emit connectionFinished();
@@ -268,6 +279,8 @@ void FramedSocketWorker::ReadMessage() {
         /* Received by Receiver (room creator) */
         else if( typeOfPacket == "PeerConnectInitiate") {
 
+            emit setDebugMessages("Received PeerConnectInitiate for "
+                                  + json["publicIp"].toString() + ":" + QString::number(json["nextPort"].toInt()));
             SendPeerConnectAccept(json);
         }
 
@@ -278,15 +291,15 @@ void FramedSocketWorker::ReadMessage() {
 
             emit startAudioOutput();
 
-            qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
-            emit setDebugMessages( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
+//            qDebug() << ( "Successfully connected with peer " + otherPeer["peerId"].toString() + "\n");
+            emit setDebugMessages( "Successfully connected with peer " + otherPeer["peerId"].toString());
 
             isConnected = true;
             emit connectionFinished();
         }
 
 
-
+        /* For both*/
         else if( typeOfPacket == "Data") {
 
             QString typeOfData = json["dataType"].toString();
@@ -303,6 +316,7 @@ void FramedSocketWorker::ReadMessage() {
             else if( typeOfData == "Audio") {
 
                 emit setJsonedAudio(json["payload"], json["size"].toInt());
+                setIsActive(true);
             }
 
             else if (typeOfData == "Text") {
@@ -317,7 +331,7 @@ void FramedSocketWorker::ReadMessage() {
 
 void FramedSocketWorker::sendText(QString data) {
 
-    if(!otherPeer.isEmpty() && !data.isEmpty()) {
+    if(isConnectedToPeer() && !data.isEmpty()) {
 
         QJsonObject obj;
         obj["type"] = "Data";
@@ -334,7 +348,7 @@ void FramedSocketWorker::sendText(QString data) {
 
 void FramedSocketWorker::sendJsonedFrame(QJsonValue frame) {
 
-    if(!otherPeer.isEmpty() && !frame.isNull()) {
+    if(isConnectedToPeer() && !frame.isNull()) {
 
         QJsonObject obj;
         obj["type"] = "Data";
@@ -351,7 +365,7 @@ void FramedSocketWorker::sendJsonedFrame(QJsonValue frame) {
 
 void FramedSocketWorker::sendJsonedAudio(QJsonValue buffer, int size) {
 
-    if(!otherPeer.isEmpty() && !buffer.isNull()) {
+    if(isConnectedToPeer() && !buffer.isNull()) {
 
         QJsonObject obj;
         obj["type"] = "Data";

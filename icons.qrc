@@ -33,5 +33,6 @@
         <file>src/assets/share.png</file>
         <file>src/assets/speaker_On_Potrait.png</file>
         <file>src/assets/switch_Camera.png</file>
+        <file>android/icon.svg</file>
     </qresource>
 </RCC>

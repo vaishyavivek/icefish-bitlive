@@ -17,9 +17,9 @@ Drawer {
         height: parent.height
         anchors.centerIn: parent
         radius: 5
-//        border.width: 1
-//        border.color: "green"
     }
+
+
 
     Rectangle {
         anchors.fill: parent

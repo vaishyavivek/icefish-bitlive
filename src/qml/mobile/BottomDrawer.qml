@@ -86,8 +86,12 @@ Drawer {
                         id: peerName
                         width: parent.width
                         height: parent.height*0.5
-                        placeholderText: "Your Name (optional)"
+                        placeholderText: "Your Name"
                         onAccepted: peerId.focus
+                        onTextChanged: {
+
+                            errored = text.length < 3
+                        }
                     }
 
 
@@ -96,12 +100,16 @@ Drawer {
                         width: parent.width
                         height: parent.height*0.5
                         placeholderText: "Seed Room Id"
-                        onAccepted: backend.initiateConnection(text, peerName.text)//backend.initiateConnection(peerId.text, text)
+                        onAccepted: sendDataToBackend()
                         onTextChanged: {
+
                             if (text.length > 3 && text.charAt(3) != "-")
                                 text = text.slice(0, 3) + "-" + text.slice(3)
+
                             if (text.length >7 && text.charAt(7) != "-")
                                 text = text.slice(0, 7) + "-" +text.slice(7)
+
+                            errored = text.length < 12
                         }
                     }
                 }
@@ -113,11 +121,7 @@ Drawer {
                     height: width
                     mainIcon: "/main/src/assets/join_Meeting.png"
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: {
-
-                        backend.initiateConnection(seedId.text, peerName.text)
-//                        backend.initiateConnection(peerId.text, peerPassword.text)
-                    }
+                    onClicked: sendDataToBackend()
                 }
             }
 
@@ -129,13 +133,49 @@ Drawer {
                 width: height
                 anchors.horizontalCenter: parent.horizontalCenter
                 mainIcon: "/main/src/assets/new_Meeting.png"
-                onClicked: {
-
-                    changeToMainRoom()
-                    mainRoom.openShareInfo()
-                }
+                onClicked: createRoom()
             }
         }
     }
 
+
+    function sendDataToBackend() {
+
+        if (peerName.text.length < 3) {
+
+            peerName.focus = true
+            peerName.errored = true
+
+            if (seedId.text.length < 12)
+                seedId.errored = true
+        }
+        else if (seedId.text.length < 12) {
+
+            seedId.focus = true
+            seedId.errored = true
+        }
+        else {
+
+            backend.MyFeed.Username = peerName.text
+            backend.initiateConnection(seedId.text)
+        }
+    }
+
+
+    function createRoom() {
+
+        if (peerName.text.length < 3) {
+
+            peerName.focus = true
+            peerName.errored = true
+        }
+        else {
+
+            backend.MyFeed.Username = peerName.text
+            changeToMainRoom()
+            mainRoom.openShareInfo()
+        }
+    }
+
+    onOpened: peerName.focus = true
 }

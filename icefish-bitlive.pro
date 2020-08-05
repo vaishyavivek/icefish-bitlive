@@ -41,6 +41,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #LIBS += -llibopus
 
 HEADERS += \
+    src/cpp/CustomChatOutput.h \
     src/cpp/CustomVideoOutput.h \
     src/cpp/utilities/AudioInputGenerator.h \
     src/cpp/utilities/AudioOutputGenerator.h \

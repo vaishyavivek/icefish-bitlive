@@ -8,20 +8,17 @@
 #include <QThread>
 
 #include "CustomVideoOutput.h"
+#include "CustomChatOutput.h"
 
 class FramedSocketWorker : public CustomVideoOutput
 {
     Q_OBJECT
-
-    Q_PROPERTY(QString TextReceived READ TextReceived NOTIFY TextReceivedChanged)
 
     Q_PROPERTY(bool IsActive READ IsActive WRITE setIsActive NOTIFY IsActiveChanged)
 
 public:
 
     explicit FramedSocketWorker(QString ServerIp, QString PeerId, QString Password, QObject *parent = nullptr);
-
-    QString TextReceived() const { return textReceived;}
 
     bool IsActive() const { return isActive;}
     void setIsActive(bool IsActive) {
@@ -35,8 +32,9 @@ public slots:
 
     bool isConnectedToPeer();
 
-    void initiateConnection(QString seedId, QString password, QString peerName);
+    void initiateConnection(QString seedId, QString password);
 
+    void getSeedName(const QString &seedname);
 
     void sendText(QString data);
 
@@ -50,7 +48,6 @@ private slots:
 
 
 signals:
-    void TextReceivedChanged();
 
     void IsActiveChanged();
 
@@ -60,12 +57,16 @@ signals:
 
     void setJsonedAudio(QJsonValue, int);
 
+    void setTextReceived(CustomChatOutput *cco);
+
     void setDebugMessages(const QString &message);
 
 
 private: //members
     QString peerId;
+    int iconId;
     QString password;
+    QString seedName;
 
     QUdpSocket *socket;
     QString serverIp;
@@ -74,8 +75,6 @@ private: //members
     QJsonObject otherPeer;
     bool isConnected = false;
     bool isActive = false;
-
-    QString textReceived;
 
     QThread voiceReceiver;
 

@@ -38,6 +38,4 @@ Button {
     onClicked: {
         checkable = !checkable
     }
-
-//    Component.onCompleted: console.log(width, height)
 }

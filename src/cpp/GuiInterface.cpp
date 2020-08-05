@@ -1,6 +1,5 @@
 #include "GuiInterface.h"
 
-#include <QDebug>
 #include <QCameraInfo>
 #include <QVideoProbe>
 #include <QJsonDocument>
@@ -8,12 +7,10 @@
 #include <QThreadPool>
 #include <QRandomGenerator>
 
-#ifdef Q_OS_ANDROID
-#include <QAndroidIntent>
-#endif
 
 #include "FramedSocketWorker.h"
 #include "utilities/AudioInputGenerator.h"
+
 
 GuiInterface::GuiInterface(QString ServerIp, QObject *parent)
     : QObject(parent), serverIp(ServerIp) {
@@ -146,6 +143,7 @@ void GuiInterface::RegistrationFinished() {
 
             myId = QString::number( json["peerId"].toInt());
 
+            iconId = QRandomGenerator::global()->generate() % 6;
             password = (QString::number(QRandomGenerator::global()->generate(), 16));
             password = password.mid(0, 4);
 
@@ -174,6 +172,8 @@ void GuiInterface::createNewWorker() {
     connect(myFeed, &CustomVideoOutput::getJsonValue, fsw, &FramedSocketWorker::sendJsonedFrame);
     connect(this, &GuiInterface::sendJsonedAudioToWorker, fsw, &FramedSocketWorker::sendJsonedAudio);
     connect(this, &GuiInterface::sendTextToWorker, fsw, &FramedSocketWorker::sendText);
+    connect(fsw, &FramedSocketWorker::setTextReceived, this, &GuiInterface::receiveText);
+    connect(myFeed, &CustomVideoOutput::SeednameChanged, fsw, &FramedSocketWorker::getSeedName);
     connect(fsw, &FramedSocketWorker::setDebugMessages, this, &GuiInterface::setDebugMessage);
     connect(fsw, &FramedSocketWorker::connectionFinished, this, &GuiInterface::finishConnection);
 
@@ -182,16 +182,9 @@ void GuiInterface::createNewWorker() {
 }
 
 
-void GuiInterface::sharePeerId() {
-
-#if defined (Q_OS_ANDROID)
-    auto serviceIntent = QAndroidIntent();
-#endif
-}
 
 
-
-void GuiInterface::initiateConnection(QString seedRoomId, QString peerName) {
+void GuiInterface::initiateConnection(QString seedRoomId) {
 
     //input seedRoomId is in the form of 123-456-abcd
     QString seedId = seedRoomId.mid(0, 3) + seedRoomId.mid(4, 3);
@@ -200,14 +193,13 @@ void GuiInterface::initiateConnection(QString seedRoomId, QString peerName) {
     if (peerFeedList.length() > 0) {
         auto last_fsw = qobject_cast<FramedSocketWorker*>(peerFeedList.last());
         if (!last_fsw->isConnectedToPeer())
-            last_fsw->initiateConnection(seedId, password, peerName);
+            last_fsw->initiateConnection(seedId, password);
         else {
             qDebug() << "No connection available";
             setDebugMessage("No connection available");
         }
     }
 }
-
 
 
 void GuiInterface::finishConnection() {
@@ -221,6 +213,19 @@ void GuiInterface::finishConnection() {
 
 void GuiInterface::sendText(QString text) {
 
-    if(!text.isEmpty() && !text.isNull())
+    if(!text.isEmpty() && !text.isNull()) {
+
+        CustomChatOutput *cco = new CustomChatOutput(text, "You", "", iconId, true);
+        chatHistory.append(cco);
+        emit ChatHistoryChanged();
+
         emit sendTextToWorker(text);
+    }
+}
+
+
+void GuiInterface::receiveText(CustomChatOutput *cco) {
+
+    chatHistory.append(cco);
+    emit ChatHistoryChanged();
 }

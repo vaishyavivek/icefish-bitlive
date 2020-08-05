@@ -4,11 +4,11 @@
 #include <QObject>
 #include <QUdpSocket>
 #include <QCamera>
-//#include <QAudioInput>
 #include <QThread>
 #include <QFile>
-#include "CustomVideoOutput.h"
 
+#include "CustomVideoOutput.h"
+#include "CustomChatOutput.h"
 
 class GuiInterface : public QObject
 {
@@ -17,6 +17,8 @@ class GuiInterface : public QObject
     Q_PROPERTY(CustomVideoOutput* MyFeed READ MyFeed NOTIFY MyFeedChanged)
 
     Q_PROPERTY(QList<QObject*> PeerFeedList READ PeerFeedList NOTIFY PeerFeedListChanged)
+
+    Q_PROPERTY(QList<QObject*> ChatHistory READ ChatHistory NOTIFY ChatHistoryChanged)
 
     Q_PROPERTY(QString RoomId READ RoomId NOTIFY RoomIdChanged)
 
@@ -35,6 +37,10 @@ public:
 
     //returns framedSocketWorker list of all the peers
     QList<QObject*> PeerFeedList() { return peerFeedList; }
+
+
+    //return chat history for every participants
+    QList<QObject*> ChatHistory() const { return chatHistory;}
 
 
     //returns seedid + password
@@ -67,14 +73,13 @@ public:
 
 public slots:
 
-    //use android intent to share the room id
-    void sharePeerId();
-
-    void initiateConnection(QString seedRoomid, QString peerName);
+    void initiateConnection(QString seedRoomid);
 
     void finishConnection();
 
     void sendText(QString text);
+
+    void receiveText(CustomChatOutput *);
 
 //    void readJsonAudio(QJsonValue value, int size);
 
@@ -89,6 +94,8 @@ signals:
     void MyFeedChanged();
 
     void PeerFeedListChanged();
+
+    void ChatHistoryChanged();
 
     void switchToMainRoomView();
 
@@ -119,6 +126,7 @@ private:
 
 
     QString roomId;
+    int iconId;
     QString myId;
     QString password;
 
@@ -134,6 +142,7 @@ private:
     CustomVideoOutput *myFeed;
 
     QList<QObject*> peerFeedList;
+    QList<QObject*> chatHistory;
 
     QString debugMessage;
     QFile debugFile;

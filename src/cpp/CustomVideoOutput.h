@@ -14,7 +14,7 @@ class CustomVideoOutput: public QObject {
 
     Q_PROPERTY(QAbstractVideoSurface* videoSurface READ VideoSurface WRITE setVideoSurface)
 
-    Q_PROPERTY(QString Username READ Username WRITE setUserName NOTIFY UsernameChanged)
+    Q_PROPERTY(QString Username READ Username WRITE setUsername NOTIFY UsernameChanged)
 
     Q_PROPERTY(int CameraRotation READ CameraRotation WRITE setCameraRotation NOTIFY CameraRotationChanged)
 
@@ -82,10 +82,11 @@ public:
 
     QString Username() const { return userName;}
 
-    void setUserName(const QString &UserName) {
+    void setUsername(const QString &UserName) {
         if (userName != UserName) {
             userName = UserName;
             emit UsernameChanged();
+            emit SeednameChanged(UserName);
         }
     }
 
@@ -114,6 +115,7 @@ public:
 signals:
 
     void UsernameChanged();
+    void SeednameChanged(const QString &seedName);
 
     void CameraRotationChanged();
 

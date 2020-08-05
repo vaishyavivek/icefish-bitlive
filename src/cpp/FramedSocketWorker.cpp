@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QThreadPool>
 #include <QDebug>
+#include <QRandomGenerator>
 
 #include "utilities/AudioOutputGenerator.h"
 
@@ -31,6 +32,8 @@ FramedSocketWorker::FramedSocketWorker(QString ServerIp, QString PeerId, QString
     socket = new QUdpSocket();
     socket->bind(QHostAddress("0.0.0.0"), 0, QAbstractSocket::ReuseAddressHint);
     connect(socket, &QUdpSocket::readyRead, this, &FramedSocketWorker::ReadMessage);
+
+    iconId = QRandomGenerator::global()->generate() % 6;
 
     SendReHello();
 
@@ -65,14 +68,19 @@ bool FramedSocketWorker::isConnectedToPeer() {
 }
 
 
-void FramedSocketWorker::initiateConnection(QString seedId, QString password, QString peerName) {
+void FramedSocketWorker::initiateConnection(QString seedId, QString password) {
 
     otherPeer["peerId"] = seedId;
     otherPeer["password"] = password;
-    otherPeer["peerName"] = peerName;
 
     tries = 0;
     SendPeerConnectRequest();
+}
+
+
+void FramedSocketWorker::getSeedName(const QString &seedname) {
+
+    seedName = seedname;
 }
 
 
@@ -86,9 +94,9 @@ void FramedSocketWorker::SendPeerConnectRequest() {
         QJsonObject obj;
         obj["type"] = "PeerConnectRequest";
         obj["peerId"] = peerId;
+        obj["peerName"] = seedName;
         obj["destinationPeerId"] = otherPeer["peerId"];
         obj["password"] = otherPeer["password"];
-        obj["peerName"] = otherPeer["peerName"];
 
 //        qDebug() << ("Sending PeerConnectRequest to " + otherPeer["peerId"].toString() + "\n");
         emit setDebugMessages("Sending PeerConnectRequest to " + otherPeer["peerId"].toString());
@@ -154,12 +162,13 @@ void FramedSocketWorker::SendPeerConnectAccept(QJsonObject peerData) {
         peerData.remove("password");
         peerData.remove("type");
         otherPeer = peerData;
-        setUserName(otherPeer["peerName"].toString());
+        setUsername(otherPeer["peerName"].toString());
 
         tries = 1;
 
         QJsonObject obj;
         obj["type"] = "PeerConnectAccept";
+        obj["peerName"] = seedName;
 
 //        qDebug() << ("Sending PeerConnectAccept to " + otherPeer["peerId"].toString() + "\n");
         emit setDebugMessages("Sending PeerConnectAccept to " + otherPeer["peerId"].toString() +
@@ -257,6 +266,9 @@ void FramedSocketWorker::ReadMessage() {
         else if( typeOfPacket == "PeerConnectAccept") {
 
             emit setDebugMessages("Received PeerConnectAccept");
+
+            otherPeer["peerName"] = json["peerName"];
+            setUsername(json["peerName"].toString());
             tries = 6;
 
             SendPeerConnectAckowledge();
@@ -321,8 +333,11 @@ void FramedSocketWorker::ReadMessage() {
 
             else if (typeOfData == "Text") {
 
-                textReceived = json["payload"].toString();
-                emit TextReceivedChanged();
+                CustomChatOutput *cco = new CustomChatOutput(json["payload"].toString(),
+                        otherPeer["peerName"].toString(),
+                        otherPeer["peerId"].toString(),
+                        iconId, false);
+                emit setTextReceived(cco);
             }
         }
     }

@@ -1,4 +1,4 @@
-# Icefish Bitlive
+# Icefish bitLive
 
 ## P2P Video Conference Over UDP
 
